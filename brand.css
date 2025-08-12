@@ -1,0 +1,6 @@
+:root {
+  --primary-color: #4fc3f7;
+  --bg-color: #121212;
+  --text-color: #eee;
+}
+.stat-value { color: var(--primary-color); }

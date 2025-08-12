@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SAC Implementation Tracker</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="brand.css"/>
+</head>
+<body>
+  <nav>
+    <button id="tab-overview" class="active">Overview</button>
+    <button id="tab-phases">Phases</button>
+    <button id="tab-timeline">Timeline</button>
+    <button id="tab-team">Team</button>
+  </nav>
+
+  <section id="overview-tab">
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-value">0%</div><div class="stat-label">Complete</div></div>
+      <div class="stat"><div class="stat-value">0</div><div class="stat-label">Total</div></div>
+      <div class="stat"><div class="stat-value">0</div><div class="stat-label">Completed</div></div>
+      <div class="stat"><div class="stat-value">0</div><div class="stat-label">Remaining</div></div>
+    </div>
+    <div class="circular-chart">
+      <svg viewBox="0 0 36 36">
+        <path class="circle-bg" d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0 -31.831"/>
+        <path class="circle" stroke-dasharray="0,100" d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0 -31.831"/>
+      </svg>
+      <div class="percentage">0%</div>
+    </div>
+    <h2>Implementation Modules</h2>
+    <div id="phase-cards-container"></div>
+  </section>
+
+  <section id="phases-tab" class="hidden">
+    <h2>Phases</h2>
+    <div id="phases-container"></div>
+  </section>
+
+  <section id="timeline-tab" class="hidden">
+    <h2>Timeline</h2>
+    <button id="btn-edit-mode">Enter Edit Mode</button>
+    <div id="timeline-container"></div>
+    <button id="btn-reset">Reset</button>
+    <button id="btn-export">Export</button>
+  </section>
+
+  <section id="team-tab" class="hidden">
+    <h2>Team</h2>
+    <button id="btn-add-member">Add Member</button>
+    <div id="team-container"></div>
+  </section>
+
+  <div id="edit-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Edit Process</h3>
+      <label>Start Date: <input type="date" id="edit-start-date"/></label>
+      <label>Duration: <input type="number" id="edit-duration" min="1"/></label>
+      <button id="btn-save-edit">Save</button>
+      <button id="btn-cancel-edit">Cancel</button>
+    </div>
+  </div>
+
+  <footer>
+    <button id="btn-self-test">Run Self-Test</button>
+    <div id="self-test-toast" class="toast hidden"></div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
