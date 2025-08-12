@@ -10,7 +10,28 @@ let appState = {
       {id:4,name:'Functional Requirements',startDate:'2025-02-01',duration:21,completed:false},
       {id:5,name:'Technical Requirements',startDate:'2025-02-22',duration:14,completed:false}
     ]},
-    // ...other phases...
+    { name:'Technical Foundation', priority:'HIGH', processes:[
+      {id:6,name:'System Architecture',startDate:'2025-03-01',duration:14,completed:false},
+      {id:7,name:'Infrastructure Setup',startDate:'2025-03-15',duration:10,completed:false},
+      {id:8,name:'Environment Configuration',startDate:'2025-03-25',duration:7,completed:false}
+    ]},
+    { name:'Data Readiness', priority:'MEDIUM', processes:[
+      {id:9,name:'Data Source Identification',startDate:'2025-04-01',duration:7,completed:false},
+      {id:10,name:'Data Quality Assessment',startDate:'2025-04-08',duration:14,completed:false}
+    ]},
+    { name:'Security & Access', priority:'MEDIUM', processes:[
+      {id:11,name:'Security Framework',startDate:'2025-04-22',duration:10,completed:false}
+    ]},
+    { name:'Implementation', priority:'MEDIUM', processes:[
+      {id:12,name:'Core Development',startDate:'2025-05-01',duration:30,completed:false},
+      {id:13,name:'Testing & QA',startDate:'2025-05-31',duration:14,completed:false}
+    ]},
+    { name:'Evaluation', priority:'LOW', processes:[
+      {id:14,name:'Performance Testing',startDate:'2025-06-14',duration:7,completed:false}
+    ]},
+    { name:'Planning', priority:'LOW', processes:[
+      {id:15,name:'Go-Live Strategy',startDate:'2025-06-21',duration:7,completed:false}
+    ]}
   ],
   team: [
     {id:1,name:'John Smith',role:'Project Manager',email:'john.smith@company.com',initials:'JS'},
@@ -18,7 +39,8 @@ let appState = {
     {id:3,name:'Mike Chen',role:'Data Analyst',email:'mike.chen@company.com',initials:'MC'}
   ]
 };
-let editMode=false;
+
+let editMode = false;
 
 // Persistence
 function loadAppState() {
@@ -29,130 +51,110 @@ function saveAppState() {
   localStorage.setItem('sacState', JSON.stringify(appState));
 }
 
-// Tab switching
-['overview','phases','timeline','team'].forEach(tab=>{
-  document.getElementById(`tab-${tab}`).addEventListener('click',()=>{
+// Tab handling
+['overview','phases','timeline','team'].forEach(t=>{
+  document.getElementById(`tab-${t}`).onclick=()=>{
     document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-    document.getElementById(`tab-${tab}`).classList.add('active');
+    document.getElementById(`tab-${t}`).classList.add('active');
     document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));
-    document.getElementById(`${tab}-tab`).classList.remove('hidden');
-    if(tab==='overview') updateProgressStats();
-    if(tab==='phases') renderPhases();
-    if(tab==='timeline') renderTimeline();
-    if(tab==='team') renderTeam();
-  });
+    document.getElementById(`${t}-tab`).classList.remove('hidden');
+    if(t==='overview') updateProgressStats();
+    if(t==='phases') renderPhases();
+    if(t==='timeline') renderTimeline();
+    if(t==='team') renderTeam();
+  };
 });
 
 // Overview
 function updateProgressStats(){
-  const all = appState.phases.flatMap(p=>p.processes);
-  const total=all.length, comp=all.filter(x=>x.completed).length;
-  const pct = total?Math.round(comp/total*100):0;
-  const els = document.querySelectorAll('.hero-stats .stat-value');
-  els[0].textContent=`${pct}%`; els[1].textContent=total; els.textContent=comp; els.textContent=total-comp;
+  const procs = appState.phases.flatMap(p=>p.processes);
+  const total=procs.length, comp=procs.filter(p=>p.completed).length;
+  const pct=total?Math.round(comp/total*100):0;
+  const els=document.querySelectorAll('.hero-stats .stat-value');
+  els[0].textContent=`${pct}%`; els[1].textContent=total;
+  els.textContent=comp; els.textContent=total-comp;
   document.querySelector('.circle').setAttribute('stroke-dasharray',`${pct},100`);
   document.querySelector('.percentage').textContent=`${pct}%`;
-  // phase cards
-  const container=document.getElementById('phase-cards-container');
-  container.innerHTML='';
-  appState.phases.forEach(phase=>{
+
+  const pc=document.getElementById('phase-cards-container'); pc.innerHTML='';
+  appState.phases.forEach(ph=>{
     const card=document.createElement('div'); card.className='phase-card';
-    card.setAttribute('data-phase',phase.name);
-    card.innerHTML=`<h3>${phase.name} <span>${phase.priority}</span></h3>
-      <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
-      <div class="phase-stats"><span></span></div>`;
-    const fill=card.querySelector('.progress-bar-fill');
-    const pctp=phase.processes.length?Math.round(phase.processes.filter(x=>x.completed).length/phase.processes.length*100):0;
-    fill.style.width=`${pctp}%`;
-    card.querySelector('.phase-stats span').textContent=`${phase.processes.filter(x=>x.completed).length}/${phase.processes.length} processes`;
-    container.appendChild(card);
+    card.innerHTML=`<h3>${ph.name} <span>${ph.priority}</span></h3>
+      <div class='progress-bar-bg'><div class='progress-bar-fill'></div></div>
+      <div class='phase-stats'><span></span></div>`;
+    const pctp=ph.processes.length?Math.round(ph.processes.filter(x=>x.completed).length/ph.processes.length*100):0;
+    card.querySelector('.progress-bar-fill').style.width=`${pctp}%`;
+    card.querySelector('.phase-stats span').textContent=`${ph.processes.filter(x=>x.completed).length}/${ph.processes.length}`;
+    pc.appendChild(card);
   });
 }
 
 // Phases
 function renderPhases(){
   const c=document.getElementById('phases-container'); c.innerHTML='';
-  appState.phases.forEach(phase=>{
-    phase.processes.forEach(proc=>{
-      const btn=document.createElement('button');
-      btn.textContent=proc.name+(proc.completed?' ✅':'');
-      btn.onclick=()=>{
-        proc.completed=!proc.completed;
-        saveAppState(); updateProgressStats(); renderPhases();
-      };
-      c.appendChild(btn);
-    });
-  });
+  appState.phases.forEach(ph=>ph.processes.forEach(proc=>{
+    const btn=document.createElement('button');
+    btn.textContent=proc.name+(proc.completed?' ✅':'');
+    btn.onclick=()=>{ proc.completed=!proc.completed; saveAppState(); updateProgressStats(); renderPhases(); };
+    c.appendChild(btn);
+  }));
 }
 
 // Timeline
-document.getElementById('btn-edit-mode').onclick=()=>{
-  editMode=!editMode;
-  document.getElementById('btn-edit-mode').textContent=editMode?'Exit Edit Mode':'Enter Edit Mode';
-  renderTimeline();
-};
+document.getElementById('btn-edit-mode').onclick=()=>{ editMode=!editMode; renderTimeline(); };
 function renderTimeline(){
   const c=document.getElementById('timeline-container'); c.innerHTML='';
-  appState.phases.forEach(phase=>{
-    phase.processes.forEach(proc=>{
-      const bar=document.createElement('div'); bar.className='task-bar';
-      // simplistic positioning
-      const dayWidth=5; // px per day
-      const start=new Date(proc.startDate).getTime();
-      const base=new Date('2025-01-01').getTime();
-      bar.style.left=`${((start-base)/(1000*60*60*24))*dayWidth}px`;
-      bar.style.width=`${proc.duration*dayWidth}px`;
-      bar.onclick=e=>{
-        if(!editMode) return;
-        openTimelineEditModal(proc);
-        e.stopPropagation();
-      };
-      if(editMode) bar.classList.add('draggable'); else bar.classList.remove('draggable');
-      c.appendChild(bar);
-    });
-  });
+  const base=new Date('2025-01-01').getTime(), pxDay=5;
+  appState.phases.forEach(ph=>ph.processes.forEach(proc=>{
+    const bar=document.createElement('div'); bar.className='task-bar';
+    bar.style.left=`${(new Date(proc.startDate)-base)/(1000*60*60*24)*pxDay}px`;
+    bar.style.width=`${proc.duration*pxDay}px`;
+    bar.onclick=e=>{
+      if(!editMode) return;
+      openTimelineEdit(proc);
+      e.stopPropagation();
+    };
+    c.appendChild(bar);
+  }));
 }
-function openTimelineEditModal(proc){
+function openTimelineEdit(proc){
   document.getElementById('edit-start-date').value=proc.startDate;
   document.getElementById('edit-duration').value=proc.duration;
   document.getElementById('edit-modal').classList.remove('hidden');
-  document.getElementById('btn-save-edit').onclick=()=>{ 
+  document.getElementById('btn-save-edit').onclick=()=>{
     proc.startDate=document.getElementById('edit-start-date').value;
     proc.duration=parseInt(document.getElementById('edit-duration').value,10);
     saveAppState(); document.getElementById('edit-modal').classList.add('hidden'); renderTimeline();
   };
-  document.getElementById('btn-cancel-edit').onclick=()=>{
-    document.getElementById('edit-modal').classList.add('hidden');
-  };
+  document.getElementById('btn-cancel-edit').onclick=()=>{ document.getElementById('edit-modal').classList.add('hidden'); };
 }
 
 // Team
 document.getElementById('btn-add-member').onclick=()=>{
-  const name=prompt('Name'), role=prompt('Role'), email=prompt('Email'), initials=prompt('Initials');
-  if(name){ const id=Date.now(); appState.team.push({id,name,role,email,initials}); saveAppState(); renderTeam(); }
+  const name=prompt('Name'); if(!name) return;
+  const role=prompt('Role'), email=prompt('Email'), initials=prompt('Initials');
+  appState.team.push({id:Date.now(),name,role,email,initials}); saveAppState(); renderTeam();
 };
 function renderTeam(){
   const c=document.getElementById('team-container'); c.innerHTML='';
   appState.team.forEach(m=>{
-    const div=document.createElement('div'); div.className='team-member';
-    div.innerHTML=`${m.initials} - ${m.name} (${m.role}) <button class="edit">Edit</button> <button class="delete">Delete</button>`;
-    div.querySelector('.delete').onclick=()=>{ appState.team=appState.team.filter(x=>x.id!==m.id); saveAppState(); renderTeam(); };
-    div.querySelector('.edit').onclick=()=>{ 
-      const name=prompt('Name',m.name), role=prompt('Role',m.role), email=prompt('Email',m.email), initials=prompt('Initials',m.initials);
-      Object.assign(m,{name,role,email,initials}); saveAppState(); renderTeam();
+    const row=document.createElement('div');
+    row.innerHTML=`${m.initials} - ${m.name} (${m.role}) 
+      <button class='edit'>Edit</button> <button class='del'>Delete</button>`;
+    row.querySelector('.del').onclick=()=>{ appState.team=appState.team.filter(x=>x.id!==m.id); saveAppState(); renderTeam(); };
+    row.querySelector('.edit').onclick=()=>{
+      m.name=prompt('Name',m.name)||m.name;
+      m.role=prompt('Role',m.role)||m.role;
+      m.email=prompt('Email',m.email)||m.email;
+      m.initials=prompt('Initials',m.initials)||m.initials;
+      saveAppState(); renderTeam();
     };
-    c.appendChild(div);
+    c.appendChild(row);
   });
 }
 
-// Self-test (basic)
-document.getElementById('btn-self-test').onclick=()=>{
-  alert('All features are persistent. Test manually: mark complete, edit timeline, add/delete team, then refresh.');
-};
+// Self-test
+document.getElementById('btn-self-test').onclick=()=>alert('Manual test: add/edit/delete, refresh—data persists.');
 
-// Initialize
-loadAppState();
-updateProgressStats();
-renderPhases();
-renderTimeline();
-renderTeam();
+// Init
+loadAppState(); updateProgressStats(); renderPhases(); renderTimeline(); renderTeam();
