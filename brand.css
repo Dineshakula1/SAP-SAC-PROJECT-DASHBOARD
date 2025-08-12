@@ -1,6 +1,30 @@
 :root {
+  /* Brand color tokens */
   --primary-color: #4fc3f7;
+  --secondary-color: #ff7043;
   --bg-color: #121212;
   --text-color: #eee;
 }
-.stat-value { color: var(--primary-color); }
+
+/* Apply brand colors */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+nav button.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+.stat-value {
+  color: var(--primary-color);
+}
+
+.progress-bar-fill {
+  background-color: var(--primary-color);
+}
+
+.task-bar {
+  background-color: var(--secondary-color);
+}
