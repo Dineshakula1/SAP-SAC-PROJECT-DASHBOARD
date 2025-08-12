@@ -1,72 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SAC Implementation Tracker</title>
-  <link rel="stylesheet" href="style.css"/>
-  <link rel="stylesheet" href="brand.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAC Implementation Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <nav>
-    <button id="tab-overview" class="active">Overview</button>
-    <button id="tab-phases">Phases</button>
-    <button id="tab-timeline">Timeline</button>
-    <button id="tab-team">Team</button>
-  </nav>
+    <div class="app">
+        <header class="header">
+            <div class="container">
+                <h1>SAC Implementation Tracker</h1>
+                <button id="selfTestBtn" class="btn btn--primary">Run Self-Test</button>
+            </div>
+        </header>
 
-  <section id="overview-tab">
-    <div class="hero-stats">
-      <div class="stat"><div class="stat-value">0%</div><div class="stat-label">Complete</div></div>
-      <div class="stat"><div class="stat-value">0</div><div class="stat-label">Total</div></div>
-      <div class="stat"><div class="stat-value">0</div><div class="stat-label">Completed</div></div>
-      <div class="stat"><div class="stat-value">0</div><div class="stat-label">Remaining</div></div>
+        <nav class="nav">
+            <div class="container">
+                <div class="nav-tabs">
+                    <button class="nav-tab active" data-tab="overview">Overview</button>
+                    <button class="nav-tab" data-tab="phases">Phases</button>
+                    <button class="nav-tab" data-tab="timeline">Timeline</button>
+                    <button class="nav-tab" data-tab="team">Team</button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="main">
+            <div class="container">
+                <!-- Overview Tab -->
+                <div id="overview" class="tab-content active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="completePercent">0%</div>
+                            <div class="stat-label">Complete</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalProcesses">0</div>
+                            <div class="stat-label">Total Processes</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="completedProcesses">0</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="remainingProcesses">0</div>
+                            <div class="stat-label">Remaining</div>
+                        </div>
+                    </div>
+
+                    <div class="overview-grid">
+                        <div class="progress-chart-container">
+                            <h3>Overall Progress</h3>
+                            <div class="chart-container" style="height: 300px; position: relative;">
+                                <canvas id="progressChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="modules-container">
+                            <h3>Implementation Modules</h3>
+                            <div id="moduleCards" class="module-cards"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phases Tab -->
+                <div id="phases" class="tab-content hidden">
+                    <h2>Implementation Phases</h2>
+                    <div id="phasesList" class="phases-list"></div>
+                </div>
+
+                <!-- Timeline Tab -->
+                <div id="timeline" class="tab-content hidden">
+                    <div class="timeline-header">
+                        <h2>Project Timeline</h2>
+                        <div class="timeline-controls">
+                            <button id="editModeBtn" class="btn btn--secondary">Enter Edit Mode</button>
+                            <button id="resetTimelineBtn" class="btn btn--outline">Reset</button>
+                            <button id="exportTimelineBtn" class="btn btn--outline">Export</button>
+                        </div>
+                    </div>
+                    <div id="ganttChart" class="gantt-chart"></div>
+                </div>
+
+                <!-- Team Tab -->
+                <div id="team" class="tab-content hidden">
+                    <div class="team-header">
+                        <h2>Team Members</h2>
+                        <button id="addMemberBtn" class="btn btn--primary">Add Member</button>
+                    </div>
+                    <div id="teamList" class="team-list"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Process Edit Modal -->
+        <div id="processModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Edit Process</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Process Name</label>
+                        <input type="text" id="processName" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" id="processStartDate" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Duration (days)</label>
+                        <input type="number" id="processDuration" class="form-control" min="1">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="saveProcessBtn" class="btn btn--primary">Save Changes</button>
+                    <button class="btn btn--secondary modal-close">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Member Modal -->
+        <div id="teamModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="teamModalTitle">Add Team Member</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" id="memberName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <input type="text" id="memberRole" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="memberEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Initials</label>
+                        <input type="text" id="memberInitials" class="form-control" maxlength="3" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="saveMemberBtn" class="btn btn--primary">Save</button>
+                    <button class="btn btn--secondary modal-close">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Self-Test Results Modal -->
+        <div id="selfTestModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Self-Test Results</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="selfTestResults"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn--primary modal-close">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="circular-chart">
-      <svg viewBox="0 0 36 36">
-        <path class="circle-bg" d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0 -31.831"/>
-        <path class="circle" stroke-dasharray="0,100" d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0 -31.831"/>
-      </svg>
-      <div class="percentage">0%</div>
-    </div>
-    <h2>Implementation Modules</h2>
-    <div id="phase-cards-container"></div>
-  </section>
 
-  <section id="phases-tab" class="hidden">
-    <h2>Phases</h2>
-    <div id="phases-container"></div>
-  </section>
-
-  <section id="timeline-tab" class="hidden">
-    <h2>Timeline</h2>
-    <button id="btn-edit-mode">Enter Edit Mode</button>
-    <div id="timeline-container"></div>
-    <button id="btn-reset">Reset</button>
-    <button id="btn-export">Export</button>
-  </section>
-
-  <section id="team-tab" class="hidden">
-    <h2>Team</h2>
-    <button id="btn-add-member">Add Member</button>
-    <div id="team-container"></div>
-  </section>
-
-  <div id="edit-modal" class="modal hidden">
-    <div class="modal-content">
-      <h3>Edit Process</h3>
-      <label>Start Date: <input type="date" id="edit-start-date"/></label>
-      <label>Duration: <input type="number" id="edit-duration" min="1"/></label>
-      <button id="btn-save-edit">Save</button>
-      <button id="btn-cancel-edit">Cancel</button>
-    </div>
-  </div>
-
-  <footer>
-    <button id="btn-self-test">Run Self-Test</button>
-    <div id="self-test-toast" class="toast hidden"></div>
-  </footer>
-
-  <script src="app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
