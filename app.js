@@ -1,800 +1,697 @@
-// Application State
-let appState = {
-  phases: [
-    {
-      name: "Discovery",
-      priority: "HIGH",
-      processes: [
-        {"name": "Business Requirements Gathering", "startDate": "2025-01-01", "duration": 14, "completed": false},
-        {"name": "Current State Analysis", "startDate": "2025-01-15", "duration": 10, "completed": false},
-        {"name": "Stakeholder Interviews", "startDate": "2025-01-25", "duration": 7, "completed": false}
-      ]
-    },
-    {
-      name: "Requirements",
-      priority: "HIGH",
-      processes: [
-        {"name": "Functional Requirements", "startDate": "2025-02-01", "duration": 21, "completed": false},
-        {"name": "Technical Requirements", "startDate": "2025-02-22", "duration": 14, "completed": false}
-      ]
-    },
-    {
-      name: "Technical Foundation",
-      priority: "HIGH",
-      processes: [
-        {"name": "System Architecture", "startDate": "2025-03-01", "duration": 14, "completed": false},
-        {"name": "Infrastructure Setup", "startDate": "2025-03-15", "duration": 10, "completed": false},
-        {"name": "Environment Configuration", "startDate": "2025-03-25", "duration": 7, "completed": false}
-      ]
-    },
-    {
-      name: "Data Readiness",
-      priority: "MEDIUM",
-      processes: [
-        {"name": "Data Source Identification", "startDate": "2025-04-01", "duration": 7, "completed": false},
-        {"name": "Data Quality Assessment", "startDate": "2025-04-08", "duration": 14, "completed": false}
-      ]
-    },
-    {
-      name: "Security & Access",
-      priority: "MEDIUM",
-      processes: [
-        {"name": "Security Framework", "startDate": "2025-04-22", "duration": 10, "completed": false}
-      ]
-    },
-    {
-      name: "Implementation",
-      priority: "MEDIUM",
-      processes: [
-        {"name": "Core Development", "startDate": "2025-05-01", "duration": 30, "completed": false},
-        {"name": "Testing & QA", "startDate": "2025-05-31", "duration": 14, "completed": false}
-      ]
-    },
-    {
-      name: "Evaluation",
-      priority: "LOW",
-      processes: [
-        {"name": "Performance Testing", "startDate": "2025-06-14", "duration": 7, "completed": false}
-      ]
-    },
-    {
-      name: "Planning",
-      priority: "LOW",
-      processes: [
-        {"name": "Go-Live Strategy", "startDate": "2025-06-21", "duration": 7, "completed": false}
-      ]
-    }
-  ],
-  team: [
-    {"name": "John Smith", "role": "Project Manager", "email": "john.smith@company.com", "initials": "JS"},
-    {"name": "Sarah Johnson", "role": "SAC Developer", "email": "sarah.johnson@company.com", "initials": "SJ"},
-    {"name": "Mike Chen", "role": "Data Analyst", "email": "mike.chen@company.com", "initials": "MC"}
-  ],
-  originalPhases: null,
-  editMode: false,
-  currentEditingProcess: null,
-  currentEditingMember: null,
-  progressChart: null
-};
-
-// Initialize the application
+// SAC Implementation Tracker Application
 document.addEventListener('DOMContentLoaded', function() {
-  // Store original state for reset functionality
-  appState.originalPhases = JSON.parse(JSON.stringify(appState.phases));
-  
-  initializeApp();
+    
+    class SACTracker {
+        constructor() {
+            this.data = {
+                phases: [],
+                team: []
+            };
+            this.editMode = false;
+            this.currentEditingTask = null;
+            this.currentEditingMember = null;
+            this.progressChart = null;
+            
+            this.init();
+        }
+
+        init() {
+            this.loadData();
+            this.setupEventListeners();
+            this.renderAll();
+            console.log('SAC Tracker initialized successfully');
+        }
+
+        loadData() {
+            // Try to load from localStorage first
+            const savedData = localStorage.getItem('sacTrackerData');
+            if (savedData) {
+                try {
+                    this.data = JSON.parse(savedData);
+                    console.log('Data loaded from localStorage');
+                } catch (e) {
+                    console.warn('Error parsing saved data, using defaults');
+                    this.loadDefaultData();
+                }
+            } else {
+                this.loadDefaultData();
+            }
+        }
+
+        loadDefaultData() {
+            this.data = {
+                "phases": [
+                    {
+                        "name": "Discovery",
+                        "priority": "HIGH",
+                        "processes": [
+                            {"id": 1, "name": "Business Requirements Gathering", "startDate": "2025-01-01", "duration": 14, "completed": false},
+                            {"id": 2, "name": "Current State Analysis", "startDate": "2025-01-15", "duration": 10, "completed": false},
+                            {"id": 3, "name": "Stakeholder Interviews", "startDate": "2025-01-25", "duration": 7, "completed": false}
+                        ]
+                    },
+                    {
+                        "name": "Requirements",
+                        "priority": "HIGH", 
+                        "processes": [
+                            {"id": 4, "name": "Functional Requirements", "startDate": "2025-02-01", "duration": 21, "completed": false},
+                            {"id": 5, "name": "Technical Requirements", "startDate": "2025-02-22", "duration": 14, "completed": false}
+                        ]
+                    },
+                    {
+                        "name": "Technical Foundation",
+                        "priority": "HIGH",
+                        "processes": [
+                            {"id": 6, "name": "System Architecture", "startDate": "2025-03-01", "duration": 14, "completed": false},
+                            {"id": 7, "name": "Infrastructure Setup", "startDate": "2025-03-15", "duration": 10, "completed": false},
+                            {"id": 8, "name": "Environment Configuration", "startDate": "2025-03-25", "duration": 7, "completed": false}
+                        ]
+                    },
+                    {
+                        "name": "Data Readiness",
+                        "priority": "MEDIUM",
+                        "processes": [
+                            {"id": 9, "name": "Data Source Identification", "startDate": "2025-04-01", "duration": 7, "completed": false},
+                            {"id": 10, "name": "Data Quality Assessment", "startDate": "2025-04-08", "duration": 14, "completed": false}
+                        ]
+                    },
+                    {
+                        "name": "Security & Access",
+                        "priority": "MEDIUM",
+                        "processes": [
+                            {"id": 11, "name": "Security Framework", "startDate": "2025-04-22", "duration": 10, "completed": false}
+                        ]
+                    },
+                    {
+                        "name": "Implementation",
+                        "priority": "MEDIUM",
+                        "processes": [
+                            {"id": 12, "name": "Core Development", "startDate": "2025-05-01", "duration": 30, "completed": false},
+                            {"id": 13, "name": "Testing & QA", "startDate": "2025-05-31", "duration": 14, "completed": false}
+                        ]
+                    },
+                    {
+                        "name": "Evaluation",
+                        "priority": "LOW",
+                        "processes": [
+                            {"id": 14, "name": "Performance Testing", "startDate": "2025-06-14", "duration": 7, "completed": false}
+                        ]
+                    },
+                    {
+                        "name": "Planning",
+                        "priority": "LOW",
+                        "processes": [
+                            {"id": 15, "name": "Go-Live Strategy", "startDate": "2025-06-21", "duration": 7, "completed": false}
+                        ]
+                    }
+                ],
+                "team": [
+                    {"id": 1, "name": "John Smith", "role": "Project Manager", "email": "john.smith@company.com", "initials": "JS"},
+                    {"id": 2, "name": "Sarah Johnson", "role": "SAC Developer", "email": "sarah.johnson@company.com", "initials": "SJ"},
+                    {"id": 3, "name": "Mike Chen", "role": "Data Analyst", "email": "mike.chen@company.com", "initials": "MC"}
+                ]
+            };
+        }
+
+        saveData() {
+            try {
+                localStorage.setItem('sacTrackerData', JSON.stringify(this.data));
+                console.log('Data saved to localStorage');
+            } catch (e) {
+                console.error('Error saving ', e);
+                this.showToast('Error saving data', 'error');
+            }
+        }
+
+        setupEventListeners() {
+            // Tab navigation
+            document.querySelectorAll('.nav__btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const tab = e.target.getAttribute('data-tab');
+                    this.switchTab(tab);
+                });
+            });
+
+            // Timeline controls
+            document.getElementById('editModeBtn').addEventListener('click', () => {
+                this.toggleEditMode();
+            });
+
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                this.resetTimeline();
+            });
+
+            document.getElementById('exportBtn').addEventListener('click', () => {
+                this.exportTimeline();
+            });
+
+            // Team controls
+            document.getElementById('addMemberBtn').addEventListener('click', () => {
+                this.showMemberModal();
+            });
+
+            // Modal controls
+            this.setupModalEventListeners();
+
+            // Self-test
+            document.getElementById('selfTestBtn').addEventListener('click', () => {
+                this.runSelfTest();
+            });
+        }
+
+        setupModalEventListeners() {
+            // Task edit modal
+            document.getElementById('taskModalClose').addEventListener('click', () => {
+                this.hideTaskModal();
+            });
+            document.getElementById('taskModalCancel').addEventListener('click', () => {
+                this.hideTaskModal();
+            });
+            document.getElementById('taskModalSave').addEventListener('click', () => {
+                this.saveTaskEdit();
+            });
+
+            // Member modal
+            document.getElementById('memberModalClose').addEventListener('click', () => {
+                this.hideMemberModal();
+            });
+            document.getElementById('memberModalCancel').addEventListener('click', () => {
+                this.hideMemberModal();
+            });
+            document.getElementById('memberModalSave').addEventListener('click', () => {
+                this.saveMemberEdit();
+            });
+
+            // Close modals on backdrop click
+            document.querySelector('#taskEditModal .modal__backdrop').addEventListener('click', () => {
+                this.hideTaskModal();
+            });
+            document.querySelector('#memberModal .modal__backdrop').addEventListener('click', () => {
+                this.hideMemberModal();
+            });
+        }
+
+        switchTab(tabName) {
+            // Update nav buttons
+            document.querySelectorAll('.nav__btn').forEach(btn => {
+                btn.classList.remove('nav__btn--active');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('nav__btn--active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('tab-content--hidden');
+            });
+            document.getElementById(`${tabName}-tab`).classList.remove('tab-content--hidden');
+
+            // Render specific tab content
+            switch(tabName) {
+                case 'overview':
+                    this.renderOverview();
+                    break;
+                case 'phases':
+                    this.renderPhases();
+                    break;
+                case 'timeline':
+                    this.renderTimeline();
+                    break;
+                case 'team':
+                    this.renderTeam();
+                    break;
+            }
+        }
+
+        renderAll() {
+            this.renderOverview();
+            this.renderPhases();
+            this.renderTimeline();
+            this.renderTeam();
+        }
+
+        renderOverview() {
+            // Calculate stats
+            const allProcesses = this.data.phases.flatMap(phase => phase.processes);
+            const totalProcesses = allProcesses.length;
+            const completedProcesses = allProcesses.filter(p => p.completed).length;
+            const remainingProcesses = totalProcesses - completedProcesses;
+            const completionPercent = totalProcesses > 0 ? Math.round((completedProcesses / totalProcesses) * 100) : 0;
+
+            // Update stats cards
+            document.getElementById('completionPercent').textContent = `${completionPercent}%`;
+            document.getElementById('totalProcesses').textContent = totalProcesses;
+            document.getElementById('completedProcesses').textContent = completedProcesses;
+            document.getElementById('remainingProcesses').textContent = remainingProcesses;
+
+            // Render progress chart
+            this.renderProgressChart(completionPercent);
+
+            // Render phase cards
+            this.renderPhaseCards();
+        }
+
+        renderProgressChart(percent) {
+            const canvas = document.getElementById('progressChart');
+            const ctx = canvas.getContext('2d');
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 70;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw background circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 8;
+            ctx.stroke();
+
+            // Draw progress arc
+            if (percent > 0) {
+                const angle = (percent / 100) * 2 * Math.PI - Math.PI / 2;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, -Math.PI / 2, angle);
+                ctx.strokeStyle = '#4f46e5';
+                ctx.lineWidth = 8;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+            }
+
+            // Draw percentage text
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`${percent}%`, centerX, centerY);
+        }
+
+        renderPhaseCards() {
+            const container = document.getElementById('phasesGrid');
+            container.innerHTML = '';
+
+            this.data.phases.forEach(phase => {
+                const totalProcesses = phase.processes.length;
+                const completedProcesses = phase.processes.filter(p => p.completed).length;
+                const progressPercent = totalProcesses > 0 ? (completedProcesses / totalProcesses) * 100 : 0;
+
+                const card = document.createElement('div');
+                card.className = 'phase-card';
+                card.innerHTML = `
+                    <div class="phase-card__header">
+                        <h3 class="phase-card__title">${phase.name}</h3>
+                        <span class="phase-card__priority phase-card__priority--${phase.priority.toLowerCase()}">${phase.priority}</span>
+                    </div>
+                    <div class="phase-card__progress">
+                        <div class="progress-bar">
+                            <div class="progress-bar__fill" style="width: ${progressPercent}%"></div>
+                        </div>
+                    </div>
+                    <div class="phase-card__stats">
+                        ${completedProcesses}/${totalProcesses} processes completed
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        renderPhases() {
+            const container = document.getElementById('phasesList');
+            container.innerHTML = '';
+
+            this.data.phases.forEach(phase => {
+                const section = document.createElement('div');
+                section.className = 'phase-section';
+                
+                const header = document.createElement('div');
+                header.className = 'phase-section__header';
+                header.innerHTML = `<h3 class="phase-section__title">${phase.name}</h3>`;
+                section.appendChild(header);
+
+                const processList = document.createElement('div');
+                processList.className = 'process-list';
+
+                phase.processes.forEach(process => {
+                    const item = document.createElement('div');
+                    item.className = `process-item ${process.completed ? 'process-item--completed' : ''}`;
+                    item.innerHTML = `
+                        <span class="process-item__name">${process.name}</span>
+                        <button class="btn btn--sm ${process.completed ? 'btn--secondary' : 'btn--outline'}" onclick="app.toggleProcessCompletion(${process.id})">
+                            ${process.completed ? '✓ Completed' : 'Mark Complete'}
+                        </button>
+                        ${process.completed ? '<span class="process-item__completed">✓</span>' : ''}
+                    `;
+                    processList.appendChild(item);
+                });
+
+                section.appendChild(processList);
+                container.appendChild(section);
+            });
+        }
+
+        toggleProcessCompletion(processId) {
+            // Find and toggle the process
+            let found = false;
+            for (const phase of this.data.phases) {
+                for (const process of phase.processes) {
+                    if (process.id === processId) {
+                        process.completed = !process.completed;
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) break;
+            }
+
+            if (found) {
+                this.saveData();
+                this.renderAll();
+                this.showToast('Process status updated', 'success');
+            }
+        }
+
+        renderTimeline() {
+            const container = document.getElementById('timelineContainer');
+            container.innerHTML = '';
+
+            const grid = document.createElement('div');
+            grid.className = 'timeline-grid';
+
+            // Calculate timeline bounds
+            const allProcesses = this.data.phases.flatMap(phase => phase.processes);
+            const startDates = allProcesses.map(p => new Date(p.startDate));
+            const minDate = new Date(Math.min(...startDates));
+            const maxDate = new Date(Math.max(...allProcesses.map(p => {
+                const start = new Date(p.startDate);
+                return new Date(start.getTime() + (p.duration * 24 * 60 * 60 * 1000));
+            })));
+
+            const totalDays = Math.ceil((maxDate - minDate) / (24 * 60 * 60 * 1000)) + 7; // Add some padding
+
+            allProcesses.forEach((process, index) => {
+                const row = document.createElement('div');
+                row.className = 'timeline-row';
+
+                const label = document.createElement('div');
+                label.className = 'timeline-label';
+                label.textContent = process.name;
+                row.appendChild(label);
+
+                const track = document.createElement('div');
+                track.className = 'timeline-track';
+
+                const bar = document.createElement('div');
+                bar.className = `timeline-bar ${this.editMode ? 'timeline-bar--editable' : ''}`;
+                
+                // Calculate position and width
+                const startDate = new Date(process.startDate);
+                const daysSinceStart = Math.ceil((startDate - minDate) / (24 * 60 * 60 * 1000));
+                const leftPercent = (daysSinceStart / totalDays) * 100;
+                const widthPercent = (process.duration / totalDays) * 100;
+
+                bar.style.left = `${leftPercent}%`;
+                bar.style.width = `${widthPercent}%`;
+                bar.textContent = `${process.duration}d`;
+
+                if (this.editMode) {
+                    bar.addEventListener('click', () => {
+                        this.showTaskModal(process);
+                    });
+                }
+
+                track.appendChild(bar);
+                row.appendChild(track);
+                grid.appendChild(row);
+            });
+
+            container.appendChild(grid);
+        }
+
+        toggleEditMode() {
+            this.editMode = !this.editMode;
+            const btn = document.getElementById('editModeBtn');
+            btn.textContent = this.editMode ? 'Exit Edit Mode' : 'Enter Edit Mode';
+            btn.classList.toggle('btn--toggle');
+            this.renderTimeline();
+        }
+
+        showTaskModal(process) {
+            this.currentEditingTask = process;
+            document.getElementById('taskStartDate').value = process.startDate;
+            document.getElementById('taskDuration').value = process.duration;
+            document.getElementById('taskEditModal').classList.remove('modal--hidden');
+        }
+
+        hideTaskModal() {
+            this.currentEditingTask = null;
+            document.getElementById('taskEditModal').classList.add('modal--hidden');
+        }
+
+        saveTaskEdit() {
+            if (this.currentEditingTask) {
+                const startDate = document.getElementById('taskStartDate').value;
+                const duration = parseInt(document.getElementById('taskDuration').value);
+
+                if (startDate && duration > 0) {
+                    this.currentEditingTask.startDate = startDate;
+                    this.currentEditingTask.duration = duration;
+                    
+                    this.saveData();
+                    this.hideTaskModal();
+                    this.renderTimeline();
+                    this.showToast('Task updated successfully', 'success');
+                } else {
+                    this.showToast('Please fill in all fields correctly', 'error');
+                }
+            }
+        }
+
+        renderTeam() {
+            const container = document.getElementById('teamGrid');
+            container.innerHTML = '';
+
+            this.data.team.forEach(member => {
+                const card = document.createElement('div');
+                card.className = 'team-card';
+                card.innerHTML = `
+                    <div class="team-card__header">
+                        <div class="team-card__avatar">${member.initials}</div>
+                        <div class="team-card__info">
+                            <h3 class="team-card__name">${member.name}</h3>
+                            <p class="team-card__role">${member.role}</p>
+                        </div>
+                    </div>
+                    <p class="team-card__email">${member.email}</p>
+                    <div class="team-card__actions">
+                        <button class="btn btn--sm btn--outline" onclick="app.editMember(${member.id})">Edit</button>
+                        <button class="btn btn--sm btn--danger" onclick="app.deleteMember(${member.id})">Delete</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        showMemberModal(member = null) {
+            this.currentEditingMember = member;
+            const title = document.getElementById('memberModalTitle');
+            
+            if (member) {
+                title.textContent = 'Edit Team Member';
+                document.getElementById('memberName').value = member.name;
+                document.getElementById('memberRole').value = member.role;
+                document.getElementById('memberEmail').value = member.email;
+                document.getElementById('memberInitials').value = member.initials;
+            } else {
+                title.textContent = 'Add Team Member';
+                document.getElementById('memberName').value = '';
+                document.getElementById('memberRole').value = '';
+                document.getElementById('memberEmail').value = '';
+                document.getElementById('memberInitials').value = '';
+            }
+            
+            document.getElementById('memberModal').classList.remove('modal--hidden');
+        }
+
+        hideMemberModal() {
+            this.currentEditingMember = null;
+            document.getElementById('memberModal').classList.add('modal--hidden');
+        }
+
+        saveMemberEdit() {
+            const name = document.getElementById('memberName').value.trim();
+            const role = document.getElementById('memberRole').value.trim();
+            const email = document.getElementById('memberEmail').value.trim();
+            const initials = document.getElementById('memberInitials').value.trim().toUpperCase();
+
+            if (!name || !role || !email || !initials) {
+                this.showToast('Please fill in all fields', 'error');
+                return;
+            }
+
+            if (this.currentEditingMember) {
+                // Edit existing member
+                this.currentEditingMember.name = name;
+                this.currentEditingMember.role = role;
+                this.currentEditingMember.email = email;
+                this.currentEditingMember.initials = initials;
+                this.showToast('Team member updated successfully', 'success');
+            } else {
+                // Add new member
+                const newId = Math.max(0, ...this.data.team.map(m => m.id)) + 1;
+                this.data.team.push({
+                    id: newId,
+                    name,
+                    role,
+                    email,
+                    initials
+                });
+                this.showToast('Team member added successfully', 'success');
+            }
+
+            this.saveData();
+            this.hideMemberModal();
+            this.renderTeam();
+        }
+
+        editMember(memberId) {
+            const member = this.data.team.find(m => m.id === memberId);
+            if (member) {
+                this.showMemberModal(member);
+            }
+        }
+
+        deleteMember(memberId) {
+            if (confirm('Are you sure you want to delete this team member?')) {
+                this.data.team = this.data.team.filter(m => m.id !== memberId);
+                this.saveData();
+                this.renderTeam();
+                this.showToast('Team member deleted successfully', 'success');
+            }
+        }
+
+        resetTimeline() {
+            if (confirm('Are you sure you want to reset the timeline to default values?')) {
+                this.loadDefaultData();
+                this.saveData();
+                this.renderAll();
+                this.showToast('Timeline reset successfully', 'success');
+            }
+        }
+
+        exportTimeline() {
+            const data = {
+                phases: this.data.phases,
+                exportDate: new Date().toISOString(),
+                totalProcesses: this.data.phases.flatMap(p => p.processes).length
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sac-timeline-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            this.showToast('Timeline exported successfully', 'success');
+        }
+
+        showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const content = document.getElementById('toastContent');
+            
+            content.textContent = message;
+            toast.className = `toast toast--${type}`;
+            toast.classList.remove('toast--hidden');
+
+            setTimeout(() => {
+                toast.classList.add('toast--hidden');
+            }, 3000);
+        }
+
+        runSelfTest() {
+            const results = [];
+            
+            // Test 1: Tab switching
+            try {
+                this.switchTab('phases');
+                this.switchTab('timeline');
+                this.switchTab('team');
+                this.switchTab('overview');
+                results.push('✅ Tab switching: PASS');
+            } catch (e) {
+                results.push('❌ Tab switching: FAIL');
+            }
+
+            // Test 2: Data persistence
+            try {
+                const testData = JSON.stringify(this.data);
+                localStorage.setItem('testSACData', testData);
+                const retrieved = localStorage.getItem('testSACData');
+                localStorage.removeItem('testSACData');
+                if (testData === retrieved) {
+                    results.push('✅ Data persistence: PASS');
+                } else {
+                    results.push('❌ Data persistence: FAIL');
+                }
+            } catch (e) {
+                results.push('❌ Data persistence: FAIL');
+            }
+
+            // Test 3: Process completion toggle
+            try {
+                const originalState = this.data.phases[0].processes[0].completed;
+                this.toggleProcessCompletion(this.data.phases.processes.id);
+                const newState = this.data.phases.processes.completed;
+                this.toggleProcessCompletion(this.data.phases.processes.id); // Reset
+                if (originalState !== newState) {
+                    results.push('✅ Process completion toggle: PASS');
+                } else {
+                    results.push('❌ Process completion toggle: FAIL');
+                }
+            } catch (e) {
+                results.push('❌ Process completion toggle: FAIL');
+            }
+
+            // Test 4: Edit mode toggle
+            try {
+                const originalEditMode = this.editMode;
+                this.toggleEditMode();
+                const newEditMode = this.editMode;
+                this.toggleEditMode(); // Reset
+                if (originalEditMode !== newEditMode) {
+                    results.push('✅ Timeline edit mode: PASS');
+                } else {
+                    results.push('❌ Timeline edit mode: FAIL');
+                }
+            } catch (e) {
+                results.push('❌ Timeline edit mode: FAIL');
+            }
+
+            // Test 5: Team operations
+            try {
+                const originalTeamCount = this.data.team.length;
+                this.data.team.push({id: 999, name: 'Test User', role: 'Tester', email: 'test@test.com', initials: 'TU'});
+                const afterAdd = this.data.team.length;
+                this.data.team = this.data.team.filter(m => m.id !== 999);
+                const afterDelete = this.data.team.length;
+                if (afterAdd === originalTeamCount + 1 && afterDelete === originalTeamCount) {
+                    results.push('✅ Team CRUD operations: PASS');
+                } else {
+                    results.push('❌ Team CRUD operations: FAIL');
+                }
+            } catch (e) {
+                results.push('❌ Team CRUD operations: FAIL');
+            }
+
+            // Show results
+            const resultMessage = 'Self-Test Results:\n\n' + results.join('\n');
+            this.showToast(resultMessage, 'info');
+            
+            // Also log to console
+            console.log('Self-Test Results:', results);
+        }
+    }
+
+    // Initialize the application
+    window.app = new SACTracker();
 });
-
-function initializeApp() {
-  setupTabSwitching();
-  setupModals();
-  renderOverview();
-  renderPhases();
-  renderTimeline();
-  renderTeam();
-  setupSelfTest();
-}
-
-// Tab Switching - Fixed
-function setupTabSwitching() {
-  const tabButtons = document.querySelectorAll('.nav-tab');
-  const tabContents = document.querySelectorAll('.tab-content');
-
-  tabButtons.forEach(button => {
-    button.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      const tabName = button.getAttribute('data-tab');
-      
-      // Update active tab button
-      tabButtons.forEach(btn => btn.classList.remove('active'));
-      button.classList.add('active');
-      
-      // Update visible tab content
-      tabContents.forEach(content => {
-        content.classList.add('hidden');
-      });
-      
-      const targetTab = document.getElementById(tabName);
-      if (targetTab) {
-        targetTab.classList.remove('hidden');
-      }
-      
-      // Refresh chart if switching to overview
-      if (tabName === 'overview' && appState.progressChart) {
-        setTimeout(() => {
-          appState.progressChart.update();
-        }, 100);
-      }
-    });
-  });
-}
-
-// Modal Management
-function setupModals() {
-  // Process modal
-  const processModal = document.getElementById('processModal');
-  const teamModal = document.getElementById('teamModal');
-  const selfTestModal = document.getElementById('selfTestModal');
-
-  // Close modal handlers
-  document.querySelectorAll('.modal-close').forEach(closeBtn => {
-    closeBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const modal = e.target.closest('.modal');
-      if (modal) {
-        modal.classList.add('hidden');
-      }
-    });
-  });
-
-  // Click outside to close
-  [processModal, teamModal, selfTestModal].forEach(modal => {
-    if (modal) {
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          modal.classList.add('hidden');
-        }
-      });
-    }
-  });
-
-  // Save process changes
-  const saveProcessBtn = document.getElementById('saveProcessBtn');
-  if (saveProcessBtn) {
-    saveProcessBtn.addEventListener('click', saveProcessChanges);
-  }
-  
-  // Save member changes
-  const saveMemberBtn = document.getElementById('saveMemberBtn');
-  if (saveMemberBtn) {
-    saveMemberBtn.addEventListener('click', saveMemberChanges);
-  }
-}
-
-// Overview Tab Functions
-function renderOverview() {
-  updateStats();
-  renderProgressChart();
-  renderModuleCards();
-}
-
-function updateStats() {
-  const totalProcesses = appState.phases.reduce((total, phase) => total + phase.processes.length, 0);
-  const completedProcesses = appState.phases.reduce((total, phase) => {
-    return total + phase.processes.filter(p => p.completed).length;
-  }, 0);
-  const remainingProcesses = totalProcesses - completedProcesses;
-  const completePercent = totalProcesses > 0 ? Math.round((completedProcesses / totalProcesses) * 100) : 0;
-
-  const totalEl = document.getElementById('totalProcesses');
-  const completedEl = document.getElementById('completedProcesses');
-  const remainingEl = document.getElementById('remainingProcesses');
-  const percentEl = document.getElementById('completePercent');
-
-  if (totalEl) totalEl.textContent = totalProcesses;
-  if (completedEl) completedEl.textContent = completedProcesses;
-  if (remainingEl) remainingEl.textContent = remainingProcesses;
-  if (percentEl) percentEl.textContent = completePercent + '%';
-}
-
-function renderProgressChart() {
-  const canvas = document.getElementById('progressChart');
-  if (!canvas) return;
-  
-  const ctx = canvas.getContext('2d');
-  const totalProcesses = appState.phases.reduce((total, phase) => total + phase.processes.length, 0);
-  const completedProcesses = appState.phases.reduce((total, phase) => {
-    return total + phase.processes.filter(p => p.completed).length;
-  }, 0);
-  
-  const completePercent = totalProcesses > 0 ? (completedProcesses / totalProcesses) * 100 : 0;
-
-  if (appState.progressChart) {
-    appState.progressChart.destroy();
-  }
-
-  appState.progressChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      datasets: [{
-        data: [completePercent, 100 - completePercent],
-        backgroundColor: ['#1FB8CD', '#ECEBD5'],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '70%',
-      plugins: {
-        legend: {
-          display: false
-        }
-      }
-    }
-  });
-}
-
-function renderModuleCards() {
-  const container = document.getElementById('moduleCards');
-  if (!container) return;
-  
-  container.innerHTML = '';
-
-  appState.phases.forEach(phase => {
-    const totalProcesses = phase.processes.length;
-    const completedProcesses = phase.processes.filter(p => p.completed).length;
-    const progress = totalProcesses > 0 ? (completedProcesses / totalProcesses) * 100 : 0;
-
-    const card = document.createElement('div');
-    card.className = 'module-card';
-    card.innerHTML = `
-      <div class="module-header">
-        <div class="module-name">${phase.name}</div>
-        <div class="module-progress">${completedProcesses}/${totalProcesses}</div>
-      </div>
-      <div class="progress-bar">
-        <div class="progress-fill" style="width: ${progress}%"></div>
-      </div>
-    `;
-
-    container.appendChild(card);
-  });
-}
-
-// Phases Tab Functions
-function renderPhases() {
-  const container = document.getElementById('phasesList');
-  if (!container) return;
-  
-  container.innerHTML = '';
-
-  appState.phases.forEach((phase, phaseIndex) => {
-    const phaseCard = document.createElement('div');
-    phaseCard.className = 'phase-card';
-
-    const processesHTML = phase.processes.map((process, processIndex) => `
-      <div class="process-item ${process.completed ? 'completed' : ''}">
-        <div class="process-info">
-          <h4>${process.name}</h4>
-          <div class="process-details">
-            Start: ${formatDate(process.startDate)} | Duration: ${process.duration} days
-          </div>
-        </div>
-        <button class="btn btn--sm ${process.completed ? 'btn--secondary' : 'btn--primary'} complete-btn" 
-                data-phase="${phaseIndex}" data-process="${processIndex}">
-          ${process.completed ? 'Completed' : 'Mark Complete'}
-        </button>
-      </div>
-    `).join('');
-
-    phaseCard.innerHTML = `
-      <div class="phase-header">
-        <h3 class="phase-name">${phase.name}</h3>
-        <span class="phase-priority ${phase.priority}">${phase.priority}</span>
-      </div>
-      <div class="processes-list">
-        ${processesHTML}
-      </div>
-    `;
-
-    container.appendChild(phaseCard);
-  });
-
-  // Add event listeners to complete buttons
-  container.querySelectorAll('.complete-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const phaseIndex = parseInt(e.target.getAttribute('data-phase'));
-      const processIndex = parseInt(e.target.getAttribute('data-process'));
-      toggleProcessCompletion(phaseIndex, processIndex);
-    });
-  });
-}
-
-function toggleProcessCompletion(phaseIndex, processIndex) {
-  if (appState.phases[phaseIndex] && appState.phases[phaseIndex].processes[processIndex]) {
-    appState.phases[phaseIndex].processes[processIndex].completed = 
-      !appState.phases[phaseIndex].processes[processIndex].completed;
-    
-    // Re-render affected sections
-    renderPhases();
-    renderOverview();
-    renderTimeline();
-  }
-}
-
-// Timeline Tab Functions
-function renderTimeline() {
-  setupTimelineControls();
-  renderGanttChart();
-}
-
-function setupTimelineControls() {
-  const editModeBtn = document.getElementById('editModeBtn');
-  const resetBtn = document.getElementById('resetTimelineBtn');
-  const exportBtn = document.getElementById('exportTimelineBtn');
-
-  if (editModeBtn) {
-    editModeBtn.replaceWith(editModeBtn.cloneNode(true));
-    const newEditBtn = document.getElementById('editModeBtn');
-    newEditBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      toggleEditMode();
-    });
-  }
-
-  if (resetBtn) {
-    resetBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      resetTimeline();
-    });
-  }
-
-  if (exportBtn) {
-    exportBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      exportTimeline();
-    });
-  }
-}
-
-function toggleEditMode() {
-  appState.editMode = !appState.editMode;
-  const btn = document.getElementById('editModeBtn');
-  
-  if (btn) {
-    if (appState.editMode) {
-      btn.textContent = 'Exit Edit Mode';
-      btn.classList.remove('btn--secondary');
-      btn.classList.add('btn--primary');
-    } else {
-      btn.textContent = 'Enter Edit Mode';
-      btn.classList.remove('btn--primary');
-      btn.classList.add('btn--secondary');
-    }
-  }
-  
-  renderGanttChart();
-}
-
-function resetTimeline() {
-  if (confirm('Are you sure you want to reset the timeline to original values?')) {
-    appState.phases = JSON.parse(JSON.stringify(appState.originalPhases));
-    appState.editMode = false;
-    renderGanttChart();
-    renderPhases();
-    renderOverview();
-    
-    const btn = document.getElementById('editModeBtn');
-    if (btn) {
-      btn.textContent = 'Enter Edit Mode';
-      btn.classList.remove('btn--primary');
-      btn.classList.add('btn--secondary');
-    }
-  }
-}
-
-function exportTimeline() {
-  const timelineData = appState.phases.map(phase => ({
-    phase: phase.name,
-    processes: phase.processes.map(process => ({
-      name: process.name,
-      startDate: process.startDate,
-      duration: process.duration,
-      completed: process.completed
-    }))
-  }));
-  
-  const dataStr = JSON.stringify(timelineData, null, 2);
-  const dataBlob = new Blob([dataStr], {type: 'application/json'});
-  
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(dataBlob);
-  link.download = 'sac-implementation-timeline.json';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
-
-function renderGanttChart() {
-  const container = document.getElementById('ganttChart');
-  if (!container) return;
-  
-  // Generate week headers
-  const startDate = new Date('2025-01-01');
-  const endDate = new Date('2025-07-01');
-  const weeks = [];
-  let currentDate = new Date(startDate);
-  
-  while (currentDate <= endDate) {
-    weeks.push(new Date(currentDate));
-    currentDate.setDate(currentDate.getDate() + 7);
-  }
-
-  const weekHeaders = weeks.map(week => 
-    `<div class="week-header">Week ${Math.ceil((week - startDate) / (7 * 24 * 60 * 60 * 1000)) + 1}</div>`
-  ).join('');
-
-  let ganttHTML = `
-    <div class="gantt-header">
-      <div class="gantt-label">Process</div>
-      <div class="gantt-timeline">
-        ${weekHeaders}
-      </div>
-    </div>
-  `;
-
-  appState.phases.forEach((phase, phaseIndex) => {
-    phase.processes.forEach((process, processIndex) => {
-      const processStart = new Date(process.startDate);
-      const startWeek = Math.floor((processStart - startDate) / (7 * 24 * 60 * 60 * 1000));
-      const durationWeeks = Math.ceil(process.duration / 7);
-      
-      const leftPos = Math.max(0, (startWeek / weeks.length) * 100);
-      const width = Math.min(100 - leftPos, (durationWeeks / weeks.length) * 100);
-      
-      const taskBarClass = appState.editMode ? 'task-bar edit-mode' : 'task-bar';
-      
-      ganttHTML += `
-        <div class="gantt-row">
-          <div class="task-label">${process.name}</div>
-          <div class="task-timeline">
-            <div class="${taskBarClass}" 
-                 style="left: ${leftPos}%; width: ${width}%;" 
-                 data-phase="${phaseIndex}" data-process="${processIndex}">
-              ${process.duration}d
-            </div>
-          </div>
-        </div>
-      `;
-    });
-  });
-
-  container.innerHTML = ganttHTML;
-
-  // Add click handlers for edit mode
-  if (appState.editMode) {
-    container.querySelectorAll('.task-bar').forEach(bar => {
-      bar.addEventListener('click', (e) => {
-        e.preventDefault();
-        const phaseIndex = parseInt(e.target.getAttribute('data-phase'));
-        const processIndex = parseInt(e.target.getAttribute('data-process'));
-        editProcess(phaseIndex, processIndex);
-      });
-    });
-  }
-}
-
-function editProcess(phaseIndex, processIndex) {
-  if (!appState.editMode || !appState.phases[phaseIndex] || !appState.phases[phaseIndex].processes[processIndex]) return;
-  
-  const process = appState.phases[phaseIndex].processes[processIndex];
-  appState.currentEditingProcess = { phaseIndex, processIndex };
-  
-  document.getElementById('processName').value = process.name;
-  document.getElementById('processStartDate').value = process.startDate;
-  document.getElementById('processDuration').value = process.duration;
-  
-  document.getElementById('processModal').classList.remove('hidden');
-}
-
-function saveProcessChanges() {
-  if (!appState.currentEditingProcess) return;
-  
-  const { phaseIndex, processIndex } = appState.currentEditingProcess;
-  const startDate = document.getElementById('processStartDate').value;
-  const duration = parseInt(document.getElementById('processDuration').value);
-  
-  if (startDate && duration > 0) {
-    appState.phases[phaseIndex].processes[processIndex].startDate = startDate;
-    appState.phases[phaseIndex].processes[processIndex].duration = duration;
-    
-    renderGanttChart();
-    document.getElementById('processModal').classList.add('hidden');
-    appState.currentEditingProcess = null;
-  } else {
-    alert('Please enter valid start date and duration');
-  }
-}
-
-// Team Tab Functions
-function renderTeam() {
-  setupTeamControls();
-  renderTeamList();
-}
-
-function setupTeamControls() {
-  const addBtn = document.getElementById('addMemberBtn');
-  if (addBtn) {
-    addBtn.replaceWith(addBtn.cloneNode(true));
-    const newAddBtn = document.getElementById('addMemberBtn');
-    newAddBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      appState.currentEditingMember = null;
-      document.getElementById('teamModalTitle').textContent = 'Add Team Member';
-      clearMemberForm();
-      document.getElementById('teamModal').classList.remove('hidden');
-    });
-  }
-}
-
-function renderTeamList() {
-  const container = document.getElementById('teamList');
-  if (!container) return;
-  
-  container.innerHTML = '';
-
-  appState.team.forEach((member, index) => {
-    const memberCard = document.createElement('div');
-    memberCard.className = 'team-member';
-    memberCard.innerHTML = `
-      <div class="member-header">
-        <div class="member-avatar">${member.initials}</div>
-        <div class="member-info">
-          <h4>${member.name}</h4>
-          <p class="member-role">${member.role}</p>
-        </div>
-      </div>
-      <div class="member-email">${member.email}</div>
-      <div class="member-actions">
-        <button class="btn btn--sm btn--secondary edit-member-btn" data-index="${index}">Edit</button>
-        <button class="btn btn--sm btn--outline delete-member-btn" data-index="${index}">Delete</button>
-      </div>
-    `;
-    container.appendChild(memberCard);
-  });
-
-  // Add event listeners
-  container.querySelectorAll('.edit-member-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const index = parseInt(e.target.getAttribute('data-index'));
-      editMember(index);
-    });
-  });
-
-  container.querySelectorAll('.delete-member-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const index = parseInt(e.target.getAttribute('data-index'));
-      deleteMember(index);
-    });
-  });
-}
-
-function editMember(index) {
-  if (!appState.team[index]) return;
-  
-  const member = appState.team[index];
-  appState.currentEditingMember = index;
-  
-  document.getElementById('teamModalTitle').textContent = 'Edit Team Member';
-  document.getElementById('memberName').value = member.name;
-  document.getElementById('memberRole').value = member.role;
-  document.getElementById('memberEmail').value = member.email;
-  document.getElementById('memberInitials').value = member.initials;
-  
-  document.getElementById('teamModal').classList.remove('hidden');
-}
-
-function deleteMember(index) {
-  if (confirm('Are you sure you want to delete this team member?')) {
-    appState.team.splice(index, 1);
-    renderTeamList();
-  }
-}
-
-function saveMemberChanges() {
-  const name = document.getElementById('memberName').value.trim();
-  const role = document.getElementById('memberRole').value.trim();
-  const email = document.getElementById('memberEmail').value.trim();
-  const initials = document.getElementById('memberInitials').value.trim().toUpperCase();
-  
-  if (!name || !role || !email || !initials) {
-    alert('Please fill in all fields');
-    return;
-  }
-  
-  if (!isValidEmail(email)) {
-    alert('Please enter a valid email address');
-    return;
-  }
-  
-  const memberData = { name, role, email, initials };
-  
-  if (appState.currentEditingMember !== null) {
-    appState.team[appState.currentEditingMember] = memberData;
-  } else {
-    appState.team.push(memberData);
-  }
-  
-  renderTeamList();
-  document.getElementById('teamModal').classList.add('hidden');
-  clearMemberForm();
-  appState.currentEditingMember = null;
-}
-
-function clearMemberForm() {
-  document.getElementById('memberName').value = '';
-  document.getElementById('memberRole').value = '';
-  document.getElementById('memberEmail').value = '';
-  document.getElementById('memberInitials').value = '';
-}
-
-// Self-Test Functionality
-function setupSelfTest() {
-  const selfTestBtn = document.getElementById('selfTestBtn');
-  if (selfTestBtn) {
-    selfTestBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      runSelfTest();
-    });
-  }
-}
-
-function runSelfTest() {
-  const results = [];
-  
-  // Test 1: Tab switching
-  try {
-    const tabs = document.querySelectorAll('.nav-tab');
-    const tabContents = document.querySelectorAll('.tab-content');
-    results.push({
-      test: 'Tab switching functionality',
-      passed: tabs.length === 4 && tabContents.length === 4,
-      message: tabs.length === 4 && tabContents.length === 4 ? 'All tabs present and functional' : 'Tab structure issue detected'
-    });
-  } catch (e) {
-    results.push({
-      test: 'Tab switching functionality',
-      passed: false,
-      message: 'Error: ' + e.message
-    });
-  }
-
-  // Test 2: Overview stats sync
-  try {
-    const totalProcesses = appState.phases.reduce((total, phase) => total + phase.processes.length, 0);
-    const completedProcesses = appState.phases.reduce((total, phase) => {
-      return total + phase.processes.filter(p => p.completed).length;
-    }, 0);
-    
-    const displayedTotal = parseInt(document.getElementById('totalProcesses').textContent);
-    const displayedCompleted = parseInt(document.getElementById('completedProcesses').textContent);
-    
-    results.push({
-      test: 'Overview stats synchronization',
-      passed: totalProcesses === displayedTotal && completedProcesses === displayedCompleted,
-      message: totalProcesses === displayedTotal && completedProcesses === displayedCompleted ? 
-        'Stats are synchronized correctly' : 'Stats synchronization issue detected'
-    });
-  } catch (e) {
-    results.push({
-      test: 'Overview stats synchronization',
-      passed: false,
-      message: 'Error: ' + e.message
-    });
-  }
-
-  // Test 3: Timeline edit mode
-  try {
-    const editBtn = document.getElementById('editModeBtn');
-    const resetBtn = document.getElementById('resetTimelineBtn');
-    const exportBtn = document.getElementById('exportTimelineBtn');
-    
-    results.push({
-      test: 'Timeline edit mode controls',
-      passed: editBtn && resetBtn && exportBtn,
-      message: editBtn && resetBtn && exportBtn ? 
-        'All timeline controls are present' : 'Missing timeline controls'
-    });
-  } catch (e) {
-    results.push({
-      test: 'Timeline edit mode controls',
-      passed: false,
-      message: 'Error: ' + e.message
-    });
-  }
-
-  // Test 4: Team CRUD operations
-  try {
-    const addBtn = document.getElementById('addMemberBtn');
-    const teamList = document.getElementById('teamList');
-    
-    results.push({
-      test: 'Team CRUD operations',
-      passed: addBtn && teamList && appState.team.length > 0,
-      message: addBtn && teamList && appState.team.length > 0 ? 
-        'Team management functionality is working' : 'Team management issue detected'
-    });
-  } catch (e) {
-    results.push({
-      test: 'Team CRUD operations',
-      passed: false,
-      message: 'Error: ' + e.message
-    });
-  }
-
-  // Test 5: Modal functionality
-  try {
-    const processModal = document.getElementById('processModal');
-    const teamModal = document.getElementById('teamModal');
-    
-    results.push({
-      test: 'Modal functionality',
-      passed: processModal && teamModal,
-      message: processModal && teamModal ? 
-        'All modals are present and functional' : 'Modal functionality issue detected'
-    });
-  } catch (e) {
-    results.push({
-      test: 'Modal functionality',
-      passed: false,
-      message: 'Error: ' + e.message
-    });
-  }
-
-  displaySelfTestResults(results);
-}
-
-function displaySelfTestResults(results) {
-  const container = document.getElementById('selfTestResults');
-  const passedCount = results.filter(r => r.passed).length;
-  const totalCount = results.length;
-  
-  let html = `
-    <div class="test-summary">
-      <h4>Test Summary: ${passedCount}/${totalCount} tests passed</h4>
-    </div>
-  `;
-  
-  results.forEach(result => {
-    html += `
-      <div class="test-result ${result.passed ? 'pass' : 'fail'}">
-        <span class="test-icon">${result.passed ? '✓' : '✗'}</span>
-        <div>
-          <strong>${result.test}</strong><br>
-          <span>${result.message}</span>
-        </div>
-      </div>
-    `;
-  });
-  
-  container.innerHTML = html;
-  document.getElementById('selfTestModal').classList.remove('hidden');
-}
-
-// Utility Functions
-function formatDate(dateString) {
-  return new Date(dateString).toLocaleDateString();
-}
-
-function isValidEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
