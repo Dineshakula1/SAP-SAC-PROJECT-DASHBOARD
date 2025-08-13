@@ -1,57 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SAC Implementation Tracker</title>
-  <link rel="stylesheet" href="style.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAC Implementation Tracker</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="app">
-    <header class="header">
-      <div class="container">
-        <div class="header__content">
-          <h1 class="header__title">SAC Implementation Tracker</h1>
-          <button class="btn btn--primary btn--sm" id="selfTestBtn">Run Self-Test</button>
-        </div>
-        <nav class="nav">
-          <button class="nav__btn nav__btn--active" data-tab="overview">Overview</button>
-          <button class="nav__btn" data-tab="phases">Phases</button>
-          <button class="nav__btn" data-tab="timeline">Timeline</button>
-          <button class="nav__btn" data-tab="team">Team</button>
-        </nav>
-      </div>
-    </header>
-
-    <main class="main">
-      <div class="container">
-        <!-- Overview -->
-        <div class="tab-content" id="overview-tab">…</div>
-        <!-- Phases -->
-        <div class="tab-content tab-content--hidden" id="phases-tab">…</div>
-        <!-- Timeline -->
-        <div class="tab-content tab-content--hidden" id="timeline-tab">
-          <div class="timeline-header">
-            <h2 class="section-title">Project Timeline</h2>
-            <div class="timeline-controls">
-              <button class="btn btn--secondary" id="editModeBtn">Enter Edit Mode</button>
-              <button class="btn btn--outline" id="resetBtn">Reset</button>
-              <button class="btn btn--outline" id="exportBtn">Export</button>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header__content">
+                    <h1 class="header__title">SAC Implementation Tracker</h1>
+                    <button class="btn btn--primary btn--sm" id="selfTestBtn">Run Self-Test</button>
+                </div>
+                <nav class="nav">
+                    <button class="nav__btn nav__btn--active" data-tab="overview">Overview</button>
+                    <button class="nav__btn" data-tab="phases">Phases</button>
+                    <button class="nav__btn" data-tab="timeline">Timeline</button>
+                    <button class="nav__btn" data-tab="team">Team</button>
+                </nav>
             </div>
-          </div>
-          <div class="timeline-container" id="timelineContainer"></div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="container">
+                <!-- Overview Tab -->
+                <div class="tab-content" id="overview-tab">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-card__value" id="completionPercent">0%</div>
+                            <div class="stat-card__label">Complete</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__value" id="totalProcesses">0</div>
+                            <div class="stat-card__label">Total Processes</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__value" id="completedProcesses">0</div>
+                            <div class="stat-card__label">Completed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__value" id="remainingProcesses">0</div>
+                            <div class="stat-card__label">Remaining</div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Chart -->
+                    <div class="progress-section">
+                        <div class="progress-chart">
+                            <canvas id="progressChart" width="200" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Phase Cards -->
+                    <div class="phases-grid" id="phasesGrid">
+                        <!-- Phase cards will be generated here -->
+                    </div>
+                </div>
+
+                <!-- Phases Tab -->
+                <div class="tab-content tab-content--hidden" id="phases-tab">
+                    <h2 class="section-title">Implementation Phases</h2>
+                    <div class="phases-list" id="phasesList">
+                        <!-- Phases will be generated here -->
+                    </div>
+                </div>
+
+                <!-- Timeline Tab -->
+                <div class="tab-content tab-content--hidden" id="timeline-tab">
+                    <div class="timeline-header">
+                        <h2 class="section-title">Project Timeline</h2>
+                        <div class="timeline-controls">
+                            <button class="btn btn--secondary" id="editModeBtn">Enter Edit Mode</button>
+                            <button class="btn btn--outline" id="resetBtn">Reset</button>
+                            <button class="btn btn--outline" id="exportBtn">Export</button>
+                        </div>
+                    </div>
+                    <div class="timeline-container" id="timelineContainer">
+                        <!-- Timeline will be generated here -->
+                    </div>
+                </div>
+
+                <!-- Team Tab -->
+                <div class="tab-content tab-content--hidden" id="team-tab">
+                    <div class="team-header">
+                        <h2 class="section-title">Team Members</h2>
+                        <button class="btn btn--primary" id="addMemberBtn">Add Member</button>
+                    </div>
+                    <div class="team-grid" id="teamGrid">
+                        <!-- Team members will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Task Edit Modal - STARTS HIDDEN -->
+        <div class="modal modal--hidden" id="taskEditModal">
+            <div class="modal__backdrop"></div>
+            <div class="modal__content">
+                <div class="modal__header">
+                    <h3 class="modal__title">Edit Task</h3>
+                    <button class="modal__close" id="taskModalClose">&times;</button>
+                </div>
+                <div class="modal__body">
+                    <div class="form-group">
+                        <label class="form-label" for="taskStartDate">Start Date</label>
+                        <input type="date" class="form-input" id="taskStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="taskDuration">Duration (days)</label>
+                        <input type="number" class="form-input" id="taskDuration" min="1">
+                    </div>
+                </div>
+                <div class="modal__footer">
+                    <button class="btn btn--outline" id="taskModalCancel">Cancel</button>
+                    <button class="btn btn--primary" id="taskModalSave">Save</button>
+                </div>
+            </div>
         </div>
-        <!-- Team -->
-        <div class="tab-content tab-content--hidden" id="team-tab">…</div>
-      </div>
-    </main>
 
-    <!-- Modals and Toast -->
-    <div class="modal modal--hidden" id="taskEditModal">…</div>
-    <div class="modal modal--hidden" id="memberModal">…</div>
-    <div class="toast toast--hidden" id="toast"><div id="toastContent"></div></div>
-  </div>
+        <!-- Team Member Modal - STARTS HIDDEN -->
+        <div class="modal modal--hidden" id="memberModal">
+            <div class="modal__backdrop"></div>
+            <div class="modal__content">
+                <div class="modal__header">
+                    <h3 class="modal__title" id="memberModalTitle">Add Team Member</h3>
+                    <button class="modal__close" id="memberModalClose">&times;</button>
+                </div>
+                <div class="modal__body">
+                    <div class="form-group">
+                        <label class="form-label" for="memberName">Name</label>
+                        <input type="text" class="form-input" id="memberName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="memberRole">Role</label>
+                        <input type="text" class="form-input" id="memberRole" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="memberEmail">Email</label>
+                        <input type="email" class="form-input" id="memberEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="memberInitials">Initials</label>
+                        <input type="text" class="form-input" id="memberInitials" maxlength="3" required>
+                    </div>
+                </div>
+                <div class="modal__footer">
+                    <button class="btn btn--outline" id="memberModalCancel">Cancel</button>
+                    <button class="btn btn--primary" id="memberModalSave">Save</button>
+                </div>
+            </div>
+        </div>
 
-  <script src="app.js"></script>
+        <!-- Toast Notifications -->
+        <div class="toast toast--hidden" id="toast">
+            <div class="toast__content" id="toastContent"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
