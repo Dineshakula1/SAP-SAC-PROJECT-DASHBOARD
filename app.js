@@ -1,4 +1,3 @@
-// SAC Implementation Tracker Application
 document.addEventListener('DOMContentLoaded', function() {
     
     class SACTracker {
@@ -10,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
             this.editMode = false;
             this.currentEditingTask = null;
             this.currentEditingMember = null;
-            this.progressChart = null;
             
             this.init();
         }
@@ -23,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         loadData() {
-            // Try to load from localStorage first
             const savedData = localStorage.getItem('sacTrackerData');
             if (savedData) {
                 try {
@@ -40,75 +37,75 @@ document.addEventListener('DOMContentLoaded', function() {
 
         loadDefaultData() {
             this.data = {
-                "phases": [
+                phases: [
                     {
-                        "name": "Discovery",
-                        "priority": "HIGH",
-                        "processes": [
-                            {"id": 1, "name": "Business Requirements Gathering", "startDate": "2025-01-01", "duration": 14, "completed": false},
-                            {"id": 2, "name": "Current State Analysis", "startDate": "2025-01-15", "duration": 10, "completed": false},
-                            {"id": 3, "name": "Stakeholder Interviews", "startDate": "2025-01-25", "duration": 7, "completed": false}
+                        name: "Discovery",
+                        priority: "HIGH",
+                        processes: [
+                            {id: 1, name: "Business Requirements Gathering", startDate: "2025-01-01", duration: 14, completed: false},
+                            {id: 2, name: "Current State Analysis", startDate: "2025-01-15", duration: 10, completed: false},
+                            {id: 3, name: "Stakeholder Interviews", startDate: "2025-01-25", duration: 7, completed: false}
                         ]
                     },
                     {
-                        "name": "Requirements",
-                        "priority": "HIGH", 
-                        "processes": [
-                            {"id": 4, "name": "Functional Requirements", "startDate": "2025-02-01", "duration": 21, "completed": false},
-                            {"id": 5, "name": "Technical Requirements", "startDate": "2025-02-22", "duration": 14, "completed": false}
+                        name: "Requirements",
+                        priority: "HIGH", 
+                        processes: [
+                            {id: 4, name: "Functional Requirements", startDate: "2025-02-01", duration: 21, completed: false},
+                            {id: 5, name: "Technical Requirements", startDate: "2025-02-22", duration: 14, completed: false}
                         ]
                     },
                     {
-                        "name": "Technical Foundation",
-                        "priority": "HIGH",
-                        "processes": [
-                            {"id": 6, "name": "System Architecture", "startDate": "2025-03-01", "duration": 14, "completed": false},
-                            {"id": 7, "name": "Infrastructure Setup", "startDate": "2025-03-15", "duration": 10, "completed": false},
-                            {"id": 8, "name": "Environment Configuration", "startDate": "2025-03-25", "duration": 7, "completed": false}
+                        name: "Technical Foundation",
+                        priority: "HIGH",
+                        processes: [
+                            {id: 6, name: "System Architecture", startDate: "2025-03-01", duration: 14, completed: false},
+                            {id: 7, name: "Infrastructure Setup", startDate: "2025-03-15", duration: 10, completed: false},
+                            {id: 8, name: "Environment Configuration", startDate: "2025-03-25", duration: 7, completed: false}
                         ]
                     },
                     {
-                        "name": "Data Readiness",
-                        "priority": "MEDIUM",
-                        "processes": [
-                            {"id": 9, "name": "Data Source Identification", "startDate": "2025-04-01", "duration": 7, "completed": false},
-                            {"id": 10, "name": "Data Quality Assessment", "startDate": "2025-04-08", "duration": 14, "completed": false}
+                        name: "Data Readiness",
+                        priority: "MEDIUM",
+                        processes: [
+                            {id: 9, name: "Data Source Identification", startDate: "2025-04-01", duration: 7, completed: false},
+                            {id: 10, name: "Data Quality Assessment", startDate: "2025-04-08", duration: 14, completed: false}
                         ]
                     },
                     {
-                        "name": "Security & Access",
-                        "priority": "MEDIUM",
-                        "processes": [
-                            {"id": 11, "name": "Security Framework", "startDate": "2025-04-22", "duration": 10, "completed": false}
+                        name: "Security & Access",
+                        priority: "MEDIUM",
+                        processes: [
+                            {id: 11, name: "Security Framework", startDate: "2025-04-22", duration: 10, completed: false}
                         ]
                     },
                     {
-                        "name": "Implementation",
-                        "priority": "MEDIUM",
-                        "processes": [
-                            {"id": 12, "name": "Core Development", "startDate": "2025-05-01", "duration": 30, "completed": false},
-                            {"id": 13, "name": "Testing & QA", "startDate": "2025-05-31", "duration": 14, "completed": false}
+                        name: "Implementation",
+                        priority: "MEDIUM",
+                        processes: [
+                            {id: 12, name: "Core Development", startDate: "2025-05-01", duration: 30, completed: false},
+                            {id: 13, name: "Testing & QA", startDate: "2025-05-31", duration: 14, completed: false}
                         ]
                     },
                     {
-                        "name": "Evaluation",
-                        "priority": "LOW",
-                        "processes": [
-                            {"id": 14, "name": "Performance Testing", "startDate": "2025-06-14", "duration": 7, "completed": false}
+                        name: "Evaluation",
+                        priority: "LOW",
+                        processes: [
+                            {id: 14, name: "Performance Testing", startDate: "2025-06-14", duration: 7, completed: false}
                         ]
                     },
                     {
-                        "name": "Planning",
-                        "priority": "LOW",
-                        "processes": [
-                            {"id": 15, "name": "Go-Live Strategy", "startDate": "2025-06-21", "duration": 7, "completed": false}
+                        name: "Planning",
+                        priority: "LOW",
+                        processes: [
+                            {id: 15, name: "Go-Live Strategy", startDate: "2025-06-21", duration: 7, completed: false}
                         ]
                     }
                 ],
-                "team": [
-                    {"id": 1, "name": "John Smith", "role": "Project Manager", "email": "john.smith@company.com", "initials": "JS"},
-                    {"id": 2, "name": "Sarah Johnson", "role": "SAC Developer", "email": "sarah.johnson@company.com", "initials": "SJ"},
-                    {"id": 3, "name": "Mike Chen", "role": "Data Analyst", "email": "mike.chen@company.com", "initials": "MC"}
+                team: [
+                    {id: 1, name: "John Smith", role: "Project Manager", email: "john.smith@company.com", initials: "JS"},
+                    {id: 2, name: "Sarah Johnson", role: "SAC Developer", email: "sarah.johnson@company.com", initials: "SJ"},
+                    {id: 3, name: "Mike Chen", role: "Data Analyst", email: "mike.chen@company.com", initials: "MC"}
                 ]
             };
         }
@@ -385,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return new Date(start.getTime() + (p.duration * 24 * 60 * 60 * 1000));
             })));
 
-            const totalDays = Math.ceil((maxDate - minDate) / (24 * 60 * 60 * 1000)) + 7; // Add some padding
+            const totalDays = Math.ceil((maxDate - minDate) / (24 * 60 * 60 * 1000)) + 7;
 
             allProcesses.forEach((process, index) => {
                 const row = document.createElement('div');
@@ -528,14 +525,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (this.currentEditingMember) {
-                // Edit existing member
                 this.currentEditingMember.name = name;
                 this.currentEditingMember.role = role;
                 this.currentEditingMember.email = email;
                 this.currentEditingMember.initials = initials;
                 this.showToast('Team member updated successfully', 'success');
             } else {
-                // Add new member
                 const newId = Math.max(0, ...this.data.team.map(m => m.id)) + 1;
                 this.data.team.push({
                     id: newId,
@@ -611,7 +606,6 @@ document.addEventListener('DOMContentLoaded', function() {
         runSelfTest() {
             const results = [];
             
-            // Test 1: Tab switching
             try {
                 this.switchTab('phases');
                 this.switchTab('timeline');
@@ -622,7 +616,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 results.push('❌ Tab switching: FAIL');
             }
 
-            // Test 2: Data persistence
             try {
                 const testData = JSON.stringify(this.data);
                 localStorage.setItem('testSACData', testData);
@@ -637,12 +630,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 results.push('❌ Data persistence: FAIL');
             }
 
-            // Test 3: Process completion toggle
             try {
                 const originalState = this.data.phases[0].processes[0].completed;
                 this.toggleProcessCompletion(this.data.phases.processes.id);
                 const newState = this.data.phases.processes.completed;
-                this.toggleProcessCompletion(this.data.phases.processes.id); // Reset
+                this.toggleProcessCompletion(this.data.phases.processes.id);
                 if (originalState !== newState) {
                     results.push('✅ Process completion toggle: PASS');
                 } else {
@@ -652,12 +644,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 results.push('❌ Process completion toggle: FAIL');
             }
 
-            // Test 4: Edit mode toggle
             try {
                 const originalEditMode = this.editMode;
                 this.toggleEditMode();
                 const newEditMode = this.editMode;
-                this.toggleEditMode(); // Reset
+                this.toggleEditMode();
                 if (originalEditMode !== newEditMode) {
                     results.push('✅ Timeline edit mode: PASS');
                 } else {
@@ -667,7 +658,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 results.push('❌ Timeline edit mode: FAIL');
             }
 
-            // Test 5: Team operations
             try {
                 const originalTeamCount = this.data.team.length;
                 this.data.team.push({id: 999, name: 'Test User', role: 'Tester', email: 'test@test.com', initials: 'TU'});
@@ -683,15 +673,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 results.push('❌ Team CRUD operations: FAIL');
             }
 
-            // Show results
             const resultMessage = 'Self-Test Results:\n\n' + results.join('\n');
             this.showToast(resultMessage, 'info');
-            
-            // Also log to console
             console.log('Self-Test Results:', results);
         }
     }
 
-    // Initialize the application
     window.app = new SACTracker();
 });
