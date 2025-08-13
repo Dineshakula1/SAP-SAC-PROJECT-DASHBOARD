@@ -97,7 +97,6 @@
             </div>
         </main>
 
-        <!-- Modals -->
         <!-- Task Edit Modal - STARTS HIDDEN -->
         <div class="modal modal--hidden" id="taskEditModal">
             <div class="modal__backdrop"></div>
@@ -150,3 +149,18 @@
                     </div>
                 </div>
                 <div class="modal__footer">
+                    <button class="btn btn--outline" id="memberModalCancel">Cancel</button>
+                    <button class="btn btn--primary" id="memberModalSave">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div class="toast toast--hidden" id="toast">
+            <div class="toast__content" id="toastContent"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
