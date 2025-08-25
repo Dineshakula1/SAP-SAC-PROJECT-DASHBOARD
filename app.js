@@ -49,56 +49,55 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     {
                         name: "Requirements",
-                        priority: "HIGH", 
+                        priority: "HIGH",
                         processes: [
-                            {id: 4, name: "Functional Requirements", startDate: "2025-02-01", duration: 21, completed: false},
-                            {id: 5, name: "Technical Requirements", startDate: "2025-02-22", duration: 14, completed: false}
+                            {id: 4, name: "Functional Requirements", startDate: "2025-02-01", duration: 21, completed: false}
                         ]
                     },
                     {
                         name: "Technical Foundation",
                         priority: "HIGH",
                         processes: [
-                            {id: 6, name: "System Architecture", startDate: "2025-03-01", duration: 14, completed: false},
-                            {id: 7, name: "Infrastructure Setup", startDate: "2025-03-15", duration: 10, completed: false},
-                            {id: 8, name: "Environment Configuration", startDate: "2025-03-25", duration: 7, completed: false}
+                            {id: 5, name: "System Architecture", startDate: "2025-03-01", duration: 14, completed: false},
+                            {id: 6, name: "Infrastructure Setup", startDate: "2025-03-15", duration: 10, completed: false},
+                            {id: 7, name: "Environment Configuration", startDate: "2025-03-25", duration: 7, completed: false}
                         ]
                     },
                     {
                         name: "Data Readiness",
                         priority: "MEDIUM",
                         processes: [
-                            {id: 9, name: "Data Source Identification", startDate: "2025-04-01", duration: 7, completed: false},
-                            {id: 10, name: "Data Quality Assessment", startDate: "2025-04-08", duration: 14, completed: false}
+                            {id: 8, name: "Data Source Identification", startDate: "2025-04-01", duration: 7, completed: false},
+                            {id: 9, name: "Data Quality Assessment", startDate: "2025-04-08", duration: 14, completed: false}
                         ]
                     },
                     {
                         name: "Security & Access",
                         priority: "MEDIUM",
                         processes: [
-                            {id: 11, name: "Security Framework", startDate: "2025-04-22", duration: 10, completed: false}
+                            {id: 10, name: "Security Framework", startDate: "2025-04-22", duration: 10, completed: false}
                         ]
                     },
                     {
                         name: "Implementation",
                         priority: "MEDIUM",
                         processes: [
-                            {id: 12, name: "Core Development", startDate: "2025-05-01", duration: 30, completed: false},
-                            {id: 13, name: "Testing & QA", startDate: "2025-05-31", duration: 14, completed: false}
+                            {id: 11, name: "Core Development", startDate: "2025-05-01", duration: 30, completed: false},
+                            {id: 12, name: "Testing & QA", startDate: "2025-05-31", duration: 14, completed: false}
                         ]
                     },
                     {
                         name: "Evaluation",
                         priority: "LOW",
                         processes: [
-                            {id: 14, name: "Performance Testing", startDate: "2025-06-14", duration: 7, completed: false}
+                            {id: 13, name: "Performance Testing", startDate: "2025-06-14", duration: 7, completed: false}
                         ]
                     },
                     {
                         name: "Planning",
                         priority: "LOW",
                         processes: [
-                            {id: 15, name: "Go-Live Strategy", startDate: "2025-06-21", duration: 7, completed: false}
+                            {id: 14, name: "Go-Live Strategy", startDate: "2025-06-21", duration: 7, completed: false}
                         ]
                     }
                 ],
@@ -108,6 +107,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     {id: 3, name: "Mike Chen", role: "Data Analyst", email: "mike.chen@company.com", initials: "MC"}
                 ]
             };
+            
+            // Store defaults for timeline reset
+            localStorage.setItem('sacTrackerDefaults', JSON.stringify({ phases: this.data.phases }));
         }
 
         saveData() {
@@ -115,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 localStorage.setItem('sacTrackerData', JSON.stringify(this.data));
                 console.log('Data saved to localStorage');
             } catch (e) {
-                console.error('Error saving data:', e);
+                console.error('Error saving ', e);
                 this.showToast('Error saving data', 'error');
             }
         }
@@ -296,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 card.innerHTML = `
                     <div class="phase-card__header">
                         <h3 class="phase-card__title">${phase.name}</h3>
-                        <span class="phase-card__priority phase-card__priority--${phase.priority.toLowerCase()}">${phase.priority}</span>
+                        <span class="phase-card__priority phase-card__priority--${phase.priority.toLowerCase()}">${phase.priority} PRIORITY</span>
                     </div>
                     <div class="phase-card__progress">
                         <div class="progress-bar">
@@ -304,7 +306,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                     <div class="phase-card__stats">
-                        ${completedProcesses}/${totalProcesses} processes completed
+                        ${completedProcesses}/${totalProcesses} processes<br>
+                        ${Math.round(progressPercent)}%
                     </div>
                 `;
                 container.appendChild(card);
@@ -370,28 +373,43 @@ document.addEventListener('DOMContentLoaded', function() {
             const container = document.getElementById('timelineContainer');
             container.innerHTML = '';
 
-            const grid = document.createElement('div');
-            grid.className = 'timeline-grid';
-
-            // Calculate timeline bounds
             const allProcesses = this.data.phases.flatMap(phase => phase.processes);
-            const startDates = allProcesses.map(p => new Date(p.startDate));
-            const minDate = new Date(Math.min(...startDates));
+            if (allProcesses.length === 0) return;
+
+            const dates = allProcesses.map(p => new Date(p.startDate));
+            const minDate = new Date(Math.min(...dates));
             const maxDate = new Date(Math.max(...allProcesses.map(p => {
                 const start = new Date(p.startDate);
-                return new Date(start.getTime() + (p.duration * 24 * 60 * 60 * 1000));
+                return start.getTime() + (p.duration * 24 * 60 * 60 * 1000);
             })));
 
             const totalDays = Math.ceil((maxDate - minDate) / (24 * 60 * 60 * 1000)) + 7;
 
-            allProcesses.forEach((process, index) => {
+            const grid = document.createElement('div');
+            grid.className = 'timeline-grid';
+            grid.style.position = 'relative';
+            grid.style.minWidth = `${totalDays * 10}px`;
+
+            // Draw calendar grid lines every 7 days
+            for (let d = 0; d < totalDays; d += 7) {
+                const line = document.createElement('div');
+                line.style.position = 'absolute';
+                line.style.left = `${(d / totalDays) * 100}%`;
+                line.style.top = '0';
+                line.style.height = '100%';
+                line.style.width = '1px';
+                line.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                line.style.pointerEvents = 'none';
+                grid.appendChild(line);
+            }
+
+            allProcesses.forEach(process => {
                 const row = document.createElement('div');
                 row.className = 'timeline-row';
 
                 const label = document.createElement('div');
                 label.className = 'timeline-label';
                 label.textContent = process.name;
-                row.appendChild(label);
 
                 const track = document.createElement('div');
                 track.className = 'timeline-track';
@@ -416,6 +434,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 track.appendChild(bar);
+                row.appendChild(label);
                 row.appendChild(track);
                 grid.appendChild(row);
             });
@@ -564,11 +583,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         resetTimeline() {
-            if (confirm('Are you sure you want to reset the timeline to default values?')) {
-                this.loadDefaultData();
-                this.saveData();
-                this.renderAll();
-                this.showToast('Timeline reset successfully', 'success');
+            if (!confirm('Reset timeline to default schedule? (Team members will be preserved)')) return;
+            
+            const defaults = localStorage.getItem('sacTrackerDefaults');
+            if (defaults) {
+                try {
+                    const defaultPhases = JSON.parse(defaults).phases;
+                    // Deep copy to avoid reference issues
+                    this.data.phases = JSON.parse(JSON.stringify(defaultPhases));
+                    this.saveData();
+                    this.renderAll();
+                    this.showToast('Timeline reset successfully', 'success');
+                } catch (e) {
+                    this.showToast('Error resetting timeline', 'error');
+                }
+            } else {
+                this.showToast('No default timeline found', 'error');
             }
         }
 
@@ -632,9 +662,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 const originalState = this.data.phases[0].processes[0].completed;
-                this.toggleProcessCompletion(this.data.phases.processes.id);
-                const newState = this.data.phases.processes.completed;
-                this.toggleProcessCompletion(this.data.phases.processes.id);
+                this.toggleProcessCompletion(this.data.phases[0].processes[0].id);
+                const newState = this.data.phases[0].processes[0].completed;
+                this.toggleProcessCompletion(this.data.phases[0].processes[0].id);
                 if (originalState !== newState) {
                     results.push('✅ Process completion toggle: PASS');
                 } else {
