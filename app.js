@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             this.editMode = false;
             this.currentEditingTask = null;
+            this.currentEditingProcess = null;
             this.currentEditingMember = null;
             
             this.init();
@@ -42,62 +43,160 @@ document.addEventListener('DOMContentLoaded', function() {
                         name: "Discovery",
                         priority: "HIGH",
                         processes: [
-                            {id: 1, name: "Business Requirements Gathering", startDate: "2025-01-01", duration: 14, completed: false},
-                            {id: 2, name: "Current State Analysis", startDate: "2025-01-15", duration: 10, completed: false},
-                            {id: 3, name: "Stakeholder Interviews", startDate: "2025-01-25", duration: 7, completed: false}
+                            {
+                                id: 1, 
+                                name: "Business Requirements Gathering", 
+                                description: "Collect and document business requirements from stakeholders across different departments to understand current processes and future needs.",
+                                startDate: "2025-01-01", 
+                                duration: 14, 
+                                completed: false
+                            },
+                            {
+                                id: 2, 
+                                name: "Current State Analysis", 
+                                description: "Analyze existing reporting and analytics infrastructure, identify gaps, and document current data sources and processes.",
+                                startDate: "2025-01-15", 
+                                duration: 10, 
+                                completed: false
+                            },
+                            {
+                                id: 3, 
+                                name: "Stakeholder Interviews", 
+                                description: "Conduct detailed interviews with key stakeholders to understand their specific analytics needs and expectations from the SAC implementation.",
+                                startDate: "2025-01-25", 
+                                duration: 7, 
+                                completed: false
+                            }
                         ]
                     },
                     {
                         name: "Requirements",
                         priority: "HIGH",
                         processes: [
-                            {id: 4, name: "Functional Requirements", startDate: "2025-02-01", duration: 21, completed: false}
+                            {
+                                id: 4, 
+                                name: "Functional Requirements", 
+                                description: "Define detailed functional requirements including reporting capabilities, dashboard specifications, and user access requirements.",
+                                startDate: "2025-02-01", 
+                                duration: 21, 
+                                completed: false
+                            }
                         ]
                     },
                     {
                         name: "Technical Foundation",
                         priority: "HIGH",
                         processes: [
-                            {id: 5, name: "System Architecture", startDate: "2025-03-01", duration: 14, completed: false},
-                            {id: 6, name: "Infrastructure Setup", startDate: "2025-03-15", duration: 10, completed: false},
-                            {id: 7, name: "Environment Configuration", startDate: "2025-03-25", duration: 7, completed: false}
+                            {
+                                id: 5, 
+                                name: "System Architecture", 
+                                description: "Design the technical architecture for SAC implementation including data flow, integration points, and security considerations.",
+                                startDate: "2025-03-01", 
+                                duration: 14, 
+                                completed: false
+                            },
+                            {
+                                id: 6, 
+                                name: "Infrastructure Setup", 
+                                description: "Set up the necessary infrastructure including SAC tenant configuration, network connectivity, and server provisioning.",
+                                startDate: "2025-03-15", 
+                                duration: 10, 
+                                completed: false
+                            },
+                            {
+                                id: 7, 
+                                name: "Environment Configuration", 
+                                description: "Configure development, testing, and production environments with appropriate settings and access controls.",
+                                startDate: "2025-03-25", 
+                                duration: 7, 
+                                completed: false
+                            }
                         ]
                     },
                     {
                         name: "Data Readiness",
                         priority: "MEDIUM",
                         processes: [
-                            {id: 8, name: "Data Source Identification", startDate: "2025-04-01", duration: 7, completed: false},
-                            {id: 9, name: "Data Quality Assessment", startDate: "2025-04-08", duration: 14, completed: false}
+                            {
+                                id: 8, 
+                                name: "Data Source Identification", 
+                                description: "Identify all data sources that will be integrated with SAC including ERP systems, databases, and external data feeds.",
+                                startDate: "2025-04-01", 
+                                duration: 7, 
+                                completed: false
+                            },
+                            {
+                                id: 9, 
+                                name: "Data Quality Assessment", 
+                                description: "Assess data quality across all identified sources and develop data cleansing and validation procedures.",
+                                startDate: "2025-04-08", 
+                                duration: 14, 
+                                completed: false
+                            }
                         ]
                     },
                     {
                         name: "Security & Access",
                         priority: "MEDIUM",
                         processes: [
-                            {id: 10, name: "Security Framework", startDate: "2025-04-22", duration: 10, completed: false}
+                            {
+                                id: 10, 
+                                name: "Security Framework", 
+                                description: "Implement security framework including user authentication, authorization, data encryption, and compliance requirements.",
+                                startDate: "2025-04-22", 
+                                duration: 10, 
+                                completed: false
+                            }
                         ]
                     },
                     {
                         name: "Implementation",
                         priority: "MEDIUM",
                         processes: [
-                            {id: 11, name: "Core Development", startDate: "2025-05-01", duration: 30, completed: false},
-                            {id: 12, name: "Testing & QA", startDate: "2025-05-31", duration: 14, completed: false}
+                            {
+                                id: 11, 
+                                name: "Core Development", 
+                                description: "Develop core SAC components including data models, stories, dashboards, and analytical applications.",
+                                startDate: "2025-05-01", 
+                                duration: 30, 
+                                completed: false
+                            },
+                            {
+                                id: 12, 
+                                name: "Testing & QA", 
+                                description: "Comprehensive testing including unit testing, integration testing, user acceptance testing, and performance testing.",
+                                startDate: "2025-05-31", 
+                                duration: 14, 
+                                completed: false
+                            }
                         ]
                     },
                     {
                         name: "Evaluation",
                         priority: "LOW",
                         processes: [
-                            {id: 13, name: "Performance Testing", startDate: "2025-06-14", duration: 7, completed: false}
+                            {
+                                id: 13, 
+                                name: "Performance Testing", 
+                                description: "Conduct performance testing to ensure the system meets performance requirements under expected load conditions.",
+                                startDate: "2025-06-14", 
+                                duration: 7, 
+                                completed: false
+                            }
                         ]
                     },
                     {
                         name: "Planning",
                         priority: "LOW",
                         processes: [
-                            {id: 14, name: "Go-Live Strategy", startDate: "2025-06-21", duration: 7, completed: false}
+                            {
+                                id: 14, 
+                                name: "Go-Live Strategy", 
+                                description: "Develop comprehensive go-live strategy including deployment plan, rollback procedures, and user training schedules.",
+                                startDate: "2025-06-21", 
+                                duration: 7, 
+                                completed: false
+                            }
                         ]
                     }
                 ],
@@ -170,6 +269,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.saveTaskEdit();
             });
 
+            // Process edit modal  
+            document.getElementById('processModalClose').addEventListener('click', () => {
+                this.hideProcessModal();
+            });
+            document.getElementById('processModalCancel').addEventListener('click', () => {
+                this.hideProcessModal();
+            });
+            document.getElementById('processModalSave').addEventListener('click', () => {
+                this.saveProcessEdit();
+            });
+
             // Member modal
             document.getElementById('memberModalClose').addEventListener('click', () => {
                 this.hideMemberModal();
@@ -184,6 +294,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Close modals on backdrop click
             document.querySelector('#taskEditModal .modal__backdrop').addEventListener('click', () => {
                 this.hideTaskModal();
+            });
+            document.querySelector('#processEditModal .modal__backdrop').addEventListener('click', () => {
+                this.hideProcessModal();
             });
             document.querySelector('#memberModal .modal__backdrop').addEventListener('click', () => {
                 this.hideMemberModal();
@@ -334,11 +447,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     const item = document.createElement('div');
                     item.className = `process-item ${process.completed ? 'process-item--completed' : ''}`;
                     item.innerHTML = `
-                        <span class="process-item__name">${process.name}</span>
-                        <button class="btn btn--sm ${process.completed ? 'btn--secondary' : 'btn--outline'}" onclick="app.toggleProcessCompletion(${process.id})">
-                            ${process.completed ? '✓ Completed' : 'Mark Complete'}
-                        </button>
-                        ${process.completed ? '<span class="process-item__completed">✓</span>' : ''}
+                        <div class="process-item__content">
+                            <div class="process-item__header">
+                                <span class="process-item__name">${process.name}</span>
+                                <div class="process-item__actions">
+                                    <button class="btn btn--sm btn--outline" onclick="app.editProcess(${process.id})">Edit</button>
+                                    <button class="btn btn--sm ${process.completed ? 'btn--secondary' : 'btn--outline'}" onclick="app.toggleProcessCompletion(${process.id})">
+                                        ${process.completed ? '✓ Completed' : 'Mark Complete'}
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="process-item__description">${process.description}</div>
+                            <div class="process-item__details">
+                                <span class="process-detail">Start: ${new Date(process.startDate).toLocaleDateString()}</span>
+                                <span class="process-detail">Duration: ${process.duration} days</span>
+                                ${process.completed ? '<span class="process-item__completed-badge">✓ Completed</span>' : ''}
+                            </div>
+                        </div>
                     `;
                     processList.appendChild(item);
                 });
@@ -346,6 +471,56 @@ document.addEventListener('DOMContentLoaded', function() {
                 section.appendChild(processList);
                 container.appendChild(section);
             });
+        }
+
+        editProcess(processId) {
+            // Find the process
+            let targetProcess = null;
+            for (const phase of this.data.phases) {
+                targetProcess = phase.processes.find(p => p.id === processId);
+                if (targetProcess) break;
+            }
+
+            if (targetProcess) {
+                this.showProcessModal(targetProcess);
+            }
+        }
+
+        showProcessModal(process) {
+            this.currentEditingProcess = process;
+            document.getElementById('processName').value = process.name;
+            document.getElementById('processDescription').value = process.description;
+            document.getElementById('processStartDate').value = process.startDate;
+            document.getElementById('processDuration').value = process.duration;
+            document.getElementById('processEditModal').classList.remove('modal--hidden');
+        }
+
+        hideProcessModal() {
+            this.currentEditingProcess = null;
+            document.getElementById('processEditModal').classList.add('modal--hidden');
+        }
+
+        saveProcessEdit() {
+            if (this.currentEditingProcess) {
+                const name = document.getElementById('processName').value.trim();
+                const description = document.getElementById('processDescription').value.trim();
+                const startDate = document.getElementById('processStartDate').value;
+                const duration = parseInt(document.getElementById('processDuration').value);
+
+                if (name && description && startDate && duration > 0) {
+                    this.currentEditingProcess.name = name;
+                    this.currentEditingProcess.description = description;
+                    this.currentEditingProcess.startDate = startDate;
+                    this.currentEditingProcess.duration = duration;
+                    
+                    this.saveData();
+                    this.hideProcessModal();
+                    this.renderAll();
+                    this.showToast('Process updated successfully', 'success');
+                } else {
+                    this.showToast('Please fill in all fields correctly', 'error');
+                }
+            }
         }
 
         toggleProcessCompletion(processId) {
@@ -369,6 +544,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        // ... rest of the methods remain the same (renderTimeline, renderTeam, etc.)
+        
         renderTimeline() {
             const container = document.getElementById('timelineContainer');
             container.innerHTML = '';
